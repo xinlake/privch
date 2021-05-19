@@ -1,0 +1,82 @@
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new FileNotFoundException("Flutter SDK not found. Check the local.properties file.")
+}
+
+apply plugin: 'com.android.application'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+android {
+    buildToolsVersion rootProject.buildToolsVersion
+    compileSdkVersion rootProject.compileSdkVersion
+    ndkVersion rootProject.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    defaultConfig {
+        applicationId "xinlake.privch"
+        resConfigs rootProject.resConfigs
+
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
+        resValue "string", "gradle_build_host", buildHost
+        resValue "string", "gradle_build_user", buildUser
+        resValue "string", "gradle_build_time", buildTime
+        //buildConfigField "String", "buildHost", buildHost
+        //buildConfigField "String", "buildUser", buildUser
+        //buildConfigField "String", "buildTime", buildTime
+
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+    }
+
+    // custom apk name and copy apk
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (output.outputFileName != null && output.outputFileName.endsWith('.apk')) {
+                // copy apk
+                variant.assembleProvider.get().doLast {
+                    def apkVersion = android.defaultConfig.versionName
+                    copy {
+                        from output.outputFile
+                        into "../../.apk"
+                        rename { String fileName ->
+                            return "${applicationId}-${apkVersion}.apk"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.3.2'
+
+    implementation project(path: ':lib-core')
+    implementation project(path: ':lib-tunnel')
+}
