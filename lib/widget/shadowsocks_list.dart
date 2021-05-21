@@ -183,7 +183,7 @@ class ShadowsocksListState extends State<ShadowsocksList> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
-          "Nothing in list",
+          "Nothing here",
           style: themeData.textTheme.headline5,
         ),
         Padding(
