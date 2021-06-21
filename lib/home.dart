@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     List? imageList = await dataMethod.importQrImage(
       "Select QRCode image",
       Theme.of(context).primaryColor,
-      maxSelect: 5,
+      maxSelect: 20,
     );
 
     if (imageList != null) {

@@ -25,7 +25,7 @@ dependencies:
   animations: ^2.0.0       #https://pub.dev/packages/animations
   charts_flutter: ^0.10.0  #https://pub.dev/packages/charts_flutter
 
-  fl_chart: ^0.36.1        #https://pub.dev/packages/fl_chart
+  fl_chart: ^0.36.2        #https://pub.dev/packages/fl_chart
   qr_flutter: ^4.0.0       #https://pub.dev/packages/qr_flutter
   
   flutter:

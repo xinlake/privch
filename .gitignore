@@ -10,8 +10,9 @@
 .svn/
 
 #xinlake
-desktop.ini
 /.apk
+*.code-workspace
+desktop.ini
 
 # IntelliJ related
 *.iml
