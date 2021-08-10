@@ -4,11 +4,11 @@ buildscript {
     def versionRevision = 0 //10bit
 
     ext {
-        buildToolsVersion = "30.0.3"
+        buildToolsVersion = "31.0.0"
         ndkVersion = "22.1.7171670"
-        compileSdkVersion = 30
+        compileSdkVersion = 31
+        targetSdkVersion = 31
         minSdkVersion = 26
-        targetSdkVersion = 30
 
         buildHost = "${InetAddress.localHost.hostName}"
         buildUser = "${System.getProperty('user.name')}"
@@ -30,8 +30,8 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:4.2.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
+        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21"
     }
 }
 

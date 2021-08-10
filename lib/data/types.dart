@@ -21,7 +21,6 @@ enum Options {
   ImportQrCamera,
   ImportQrImage,
   NewShadowsocks,
-  AddGeoLocation,
 }
 
 class OptionView {

@@ -18,7 +18,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     await xinMethod.showToast("Building...");
   }
 
-  Future<void> _onV2Ray() async {
+  Future<void> _onGeoLocation() async {
     await xinMethod.showToast("Building...");
   }
 
@@ -74,7 +74,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           Divider(height: 10),
           _buildMenuItem(Icons.storage, "Shadowsocks", _onShadowsocks),
-          _buildMenuItem(Icons.storage, "V2Ray", _onV2Ray),
+          _buildMenuItem(Icons.add_location, "Update GeoLocation", _onGeoLocation),
           // Spacer(),
           Divider(height: 10),
           _buildMenuItem(Icons.settings, "Setting", _onTapSetting),

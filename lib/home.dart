@@ -20,7 +20,6 @@ final List<OptionView> _actionList = <OptionView>[
   OptionView(Icons.camera_alt, "Scan QRCode ...", Options.ImportQrCamera),
   OptionView(Icons.image, "Import form image ...", Options.ImportQrImage),
   OptionView(Icons.code, "Create new ...", Options.NewShadowsocks),
-  OptionView(Icons.add_location, "Update GeoLocation ...", Options.AddGeoLocation),
 ];
 
 class HomePage extends StatefulWidget {
@@ -97,8 +96,6 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  void _actionAddGeoLocation() async {}
-
   Future<void> _onShadowsocksTap(Shadowsocks shadowsocks) async {
     if (shadowsocks.id == preference.currentServerId.value) {
       return;
@@ -154,9 +151,6 @@ class _HomePageState extends State<HomePage> {
         break;
       case Options.NewShadowsocks:
         _actionNewShadowsocks();
-        break;
-      case Options.AddGeoLocation:
-        _actionAddGeoLocation();
         break;
     }
   }
