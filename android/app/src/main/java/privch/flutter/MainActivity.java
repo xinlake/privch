@@ -145,8 +145,7 @@ public class MainActivity extends FlutterActivity {
         // init platform channels
         PrivChPlatform.create(this, dataListener, vpnListener);
 
-        /*
-        // register platform views
+        /* register platform views
         flutterEngine.getPlatformViewsController().getRegistry()
             .registerViewFactory(ImageFactory.typeId, new ImageFactory());
         */

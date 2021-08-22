@@ -61,5 +61,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 
     // xinlake android library
-    api 'dev.xinlake:armoury:1.0.1-alpha8b'
+    api 'dev.xinlake:armoury:1.0.1-alpha8c'
 }

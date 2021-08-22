@@ -29,7 +29,7 @@ public final class PrivChTunnel {
     public int portLocalDns;
     public String remoteDnsAddress;
 
-    // instance
+    // single instance
     private static PrivChTunnel tunnel;
 
     private PrivChTunnel(Context appContext) {
@@ -40,12 +40,12 @@ public final class PrivChTunnel {
         configureIntent = PendingIntent.getActivity(appContext, 0,
             new Intent("xinlake.privch.flutter.ConfigVpn")
                 .setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT),
-            0);
+            PendingIntent.FLAG_IMMUTABLE);
         noBackupFilesDir = appContext.getNoBackupFilesDir();
         nativeLibraryDir = appContext.getApplicationInfo().nativeLibraryDir;
 
         /*
-         * access preference in the current process
+         * access preference in this current process
          */
         SharedPreferences preferences = appContext.getSharedPreferences(PrivChPreference.prefName, Context.MODE_PRIVATE);
         portProxy = preferences.getInt(PrivChPreference.keyProxyPort, PrivChPreference.defProxyPort);

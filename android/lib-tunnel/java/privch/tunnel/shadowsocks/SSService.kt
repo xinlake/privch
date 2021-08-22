@@ -117,6 +117,7 @@ class SSService : VpnService() {
     private var server: RemoteServer? = null
     private var listener: IServiceEvent? = null
 
+    @Volatile
     private var underlyingNetwork: Network? = null
         set(value) {
             field = value
@@ -125,7 +126,9 @@ class SSService : VpnService() {
 
     // clearing underlyingNetworks makes Android 9 consider the network to be metered
     private val underlyingNetworks
-        get() = if (Build.VERSION.SDK_INT == 28 && metered) null else underlyingNetwork?.let { arrayOf(it) }
+        get() = if (Build.VERSION.SDK_INT == 28 && metered) null else underlyingNetwork?.let {
+            arrayOf(it)
+        }
 
     private suspend fun preInit() = DefaultNetworkListener.start(this) { underlyingNetwork = it }
     private suspend fun rawResolver(query: ByteArray) = DnsResolverCompat.resolveRawOnActiveNetwork(query)
@@ -273,13 +276,15 @@ class SSService : VpnService() {
         val conn = builder.establish() ?: throw Exception("Null Connection")
         this.conn = conn
 
-        val cmd = arrayListOf(File(applicationInfo.nativeLibraryDir, Executable.TUN2SOCKS).absolutePath,
+        val cmd = arrayListOf(
+            File(applicationInfo.nativeLibraryDir, Executable.TUN2SOCKS).absolutePath,
             "--netif-ipaddr", PRIVATE_VLAN4_ROUTER,
             "--socks-server-addr", "127.0.0.1:${PrivChTunnel.getInstance().portProxy}",
             "--tunmtu", VPN_MTU.toString(),
             "--sock-path", "sock_path",
             "--dnsgw", "127.0.0.1:${PrivChTunnel.getInstance().portLocalDns}",
             "--loglevel", "warning")
+
         if (ipv6) {
             cmd += "--netif-ip6addr"
             cmd += PRIVATE_VLAN6_ROUTER
