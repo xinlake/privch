@@ -1,0 +1,18 @@
+/.gradle
+/.idea
+/build
+/captures
+
+*.iml
+gradlew
+gradlew.bat
+local.properties
+
+gradle-wrapper.jar
+.externalNativeBuild
+.cxx
+
+# Xinlake
+/.aar
+/.apk
+desktop.ini

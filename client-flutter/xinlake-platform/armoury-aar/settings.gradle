@@ -1,0 +1,3 @@
+rootProject.name = "Armoury"
+include ':ready'
+include ':armoury'

@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <application>
+        <activity
+            android:name="xinlake.qrcode.mlkit.CameraXActivity"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="nosensor">
+
+            <!-- Declare notch support -->
+            <meta-data
+                android:name="android.notch_support"
+                android:value="true" />
+        </activity>
+    </application>
+</manifest>

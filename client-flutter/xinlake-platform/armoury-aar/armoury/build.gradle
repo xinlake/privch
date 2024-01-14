@@ -1,0 +1,59 @@
+apply plugin: "com.android.library"
+
+def isXinlake = System.getProperty("user.name").toLowerCase().contentEquals("xinlake")
+if (isXinlake) {
+    apply from: "publish-sonatype.gradle"
+}
+
+android {
+    buildToolsVersion "33.0.2"
+    compileSdkVersion 33
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 33
+
+        buildConfigField "String", "versionName", "\"${rootProject.versionName}\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    // custom apk name and copy apk
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (output.outputFileName?.endsWith('.aar')) {
+                // copy aar
+                variant.assembleProvider.get().doLast {
+                    def aarVersion = rootProject.versionName
+                    copy {
+                        from output.outputFile
+                        into "../.aar"
+                        rename { String fileName ->
+                            "${applicationId}-${aarVersion}.aar"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile "../../plugin/android/src/main/AndroidManifest.xml"
+            java.srcDirs = ["../../plugin/android/src/main/armoury"]
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.5.0'
+}

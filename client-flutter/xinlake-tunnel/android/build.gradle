@@ -1,0 +1,134 @@
+import java.util.regex.Pattern
+
+group 'xinlake.tunnel'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
+        classpath 'org.mozilla.rust-android-gradle:plugin:0.9.3'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace "xinlake.tunnel"
+
+    buildToolsVersion "33.0.2"
+    ndkVersion '26.1.10909125'
+    compileSdk 33
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        minSdkVersion 26
+
+        externalNativeBuild {
+            cmake {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version "3.22.1"
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+}
+
+apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
+
+def getCurrentBuildType() {
+    Gradle gradle = getGradle()
+    Pattern patternRelease = Pattern.compile("args=\\[.+?Release]")
+
+    String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+    def isRelease = patternRelease.matcher(tskReqStr).find()
+    return isRelease ? "release" : "debug"
+}
+
+cargo {
+    module = "src/main/rust/shadowsocks-rust"
+    libname = "sslocal"
+    targets = ["arm", "arm64"]
+    profile = findProperty("CARGO_PROFILE")?.toString() ?: getCurrentBuildType()
+    extraCargoBuildArguments = ["--bin", libname]
+    featureSpec.noDefaultBut(
+        // "stream-cipher",
+        // "aead-cipher-extra",
+        "logging",
+        "local-flow-stat",
+        "local-dns",
+        "aead-cipher-2022"
+    )
+
+    exec = { spec, toolchain ->
+        def pythonList = ["python3", "python", "py"]
+        def hasPython = false
+        for (python in pythonList) {
+            try {
+                Runtime.getRuntime().exec("$python -V >/dev/null 2>&1")
+                spec.environment("RUST_ANDROID_GRADLE_PYTHON_COMMAND", "$python")
+                hasPython = true
+
+                project.logger.lifecycle("$python detected.")
+                break
+            } catch (Exception ignored) {
+            }
+        }
+        if (!hasPython) {
+            throw new GradleException("Python not found")
+        }
+
+        spec.environment("RUST_ANDROID_GRADLE_LINKER_WRAPPER_PY", "$projectDir/$module/../linker-wrapper.py")
+        spec.environment("RUST_ANDROID_GRADLE_TARGET", "target/${toolchain.target}/$profile/lib${libname}.so")
+    }
+}
+
+tasks.register('cargoClean', Exec) {
+    executable("cargo")     // cargo.cargoCommand
+    args("clean")
+    workingDir("$projectDir/${cargo.module}")
+}
+
+tasks.clean.dependsOn("cargoClean")
+tasks.configureEach {
+    if (name == "mergeDebugJniLibFolders" || name == "mergeReleaseJniLibFolders") {
+        dependsOn("cargoBuild")
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+}

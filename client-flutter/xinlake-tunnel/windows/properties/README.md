@@ -1,0 +1,1 @@
+Binary files in this folder and subfolder are currently from the [shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust) project, and these files will be compiled from source code in the future

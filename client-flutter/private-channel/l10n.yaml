@@ -1,0 +1,2 @@
+# defaults to true in Flutter 3.13
+nullable-getter: false

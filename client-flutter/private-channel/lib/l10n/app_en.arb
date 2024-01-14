@@ -1,0 +1,95 @@
+{
+    "@@locale": "en",
+
+    "me": "Me",
+    "approve": "OK",
+    "messages": "msgs",
+    "removed": "removed",
+    "undo": "Undo",
+    "preference": "Preference",
+
+    "home": "Home",
+    "connect": "CONNECT",
+    "connected": "CONNECTED",
+    "disconnect": "DISCONNECT",
+    "notConnected": "NOT CONNECTED",
+
+    "servers": "Servers",
+    "noServer": "No server",
+    "addServer": "Add server",
+    "createServer": "Create server",
+    
+    "importFromScanner": "Scan QRCode",
+    "importFromScreenshot": "Read screen QRCode",
+    "importFromImage": "Import from image",
+    
+    "ossLicense": "Open Source Software",
+    "privacyPolicy": "Privacy Policy",
+
+    "delAllServers": "Delete All Servers",
+    "delAllServersBody": "All servers will be **completely deleted**, continue?",
+    
+    "connectBy": "{key, select, auto{Auto} manual{Manual} other{}}",
+    "@connectBy" : {
+        "placeholders": {
+            "key": {
+                "type": "String"
+            }
+        }
+    },
+
+    "sortBy": "{key, select, name{Name} updated{Updated} encrypt{Encryption} other{}}",
+    "@sortBy" : {
+        "placeholders": {
+            "key": {
+                "type": "String"
+            }
+        }
+    },
+
+    "invalidName":"Invalid name",
+    "invalidPortNumber": "Invalid port number",
+    "invalidIpAddress": "Invalid IP address",
+    "invalidPassword": "Invalid password",    
+
+    "hintChatTitle": "Enter a chat title",
+    "hintUserName": "Enter a nickname",
+    "hintTextHere": "Text here, press Enter to change line",
+
+    "settings": "Settings",
+    "settingAppearance": "LANGUAGE & APPEARANCE",
+    "settingNetwork": "Networking",
+    "settingTts": "NEURAL TTS",
+    "about": "About",
+
+    "prefShowChart": "Show speed chart",
+
+    "language": "UI language",
+    "languageBy": "{key, select, en{English} zh{Chinese} other{}}",
+    "@languageBy" : {
+        "placeholders": {
+            "key": {
+            "type": "String"
+            }
+        }
+    },
+
+    "themeMode": "Theme mode",
+    "themeAuto": "Auto",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeColor": "Primary color",
+    "themeColorDesc": "Click above the color block to select the theme color of the light mode, \nand click below the color block to select the theme color of the dark mode",
+
+    "tunnelProxyPort": "Proxy Port",
+    "tunnelDnsLocalPort": "Local DNS Port",
+    "tunnelDnsRemoteAddress": "DNS Server",
+
+    "ssName": "Name",
+    "ssAddress": "Address",
+    "ssPort": "Port",
+    "ssPassword": "Password",
+    "ssEncrypt": "Encryption",
+    
+    "eof": "EOF"
+}

@@ -1,0 +1,95 @@
+{
+    "@@locale": "zh",
+
+    "me": "我",
+    "approve": "确定",
+    "messages": "消息",
+    "removed": "已删除",
+    "undo": "撤销",
+    "preference": "偏好",
+
+    "home": "首页",
+    "connect": "连接",
+    "connected": "已连接",
+    "disconnect": "停止",
+    "notConnected": "未连接",
+
+    "servers": "服务器",
+    "noServer": "没有服务器",
+    "addServer": "添加服务器",
+    "createServer": "手动创建",
+
+    "importFromScanner": "扫描二维码",
+    "importFromScreenshot": "扫描屏幕上的二维码",
+    "importFromImage": "从图片导入",
+    
+    "ossLicense": "开源软件许可",
+    "privacyPolicy": "隐私声明",
+
+    "delAllServers": "删除所有服务器",
+    "delAllServersBody": "所有服务器将被**彻底删除**，是否继续？",
+
+    "connectBy": "{key, select, auto{自动} manual{手动} other{}}",
+    "@connectBy" : {
+        "placeholders": {
+            "key": {
+                "type": "String"
+            }
+        }
+    },
+
+    "sortBy": "{key, select, name{名称} updated{日期} encrypt{加密方式} other{}}",
+    "@sortBy" : {
+        "placeholders": {
+            "key": {
+                "type": "String"
+            }
+        }
+    },
+
+    "invalidName":"无效的名称",
+    "invalidPortNumber": "无效的端口号",
+    "invalidIpAddress": "无效的 IP 地址",
+    "invalidPassword": "无效的密码",
+
+    "hintChatTitle": "输入对话标题",
+    "hintUserName": "输入昵称",
+    "hintTextHere": "在这里输入，按回车换行",
+
+    "settings": "设置",
+    "settingAppearance": "语言和外观",
+    "settingNetwork": "网络",
+    "settingTts": "自然语音合成",
+    "about": "关于",
+
+    "prefShowChart": "显示网速图",
+
+    "language": "界面语言",
+    "languageBy": "{key, select, en{英文} zh{中文} other{}}",
+    "@languageBy" : {
+        "placeholders": {
+            "key": {
+            "type": "String"
+            }
+        }
+    },
+
+    "themeMode": "色彩模式",
+    "themeAuto": "自动",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeColor": "主题色",
+    "themeColorDesc": "点击色块上方选择浅色模式的主题色，\n点击色块下方选择深色模式的主题色",
+
+    "tunnelProxyPort": "代理端口",
+    "tunnelDnsLocalPort": "DNS 端口",
+    "tunnelDnsRemoteAddress": "DNS 服务器",
+
+    "ssName": "名称",
+    "ssAddress": "地址",
+    "ssPort": "端口",
+    "ssPassword": "密码",
+    "ssEncrypt": "加密方式",
+    
+    "eof": "EOF"
+}

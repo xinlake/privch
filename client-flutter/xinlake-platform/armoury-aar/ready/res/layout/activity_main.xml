@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:ignore="HardcodedText">
+
+    <!-- utility -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:text="utility"
+        android:textAllCaps="true"
+        android:textStyle="bold" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/main_mobile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="mobile" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/main_uri_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="uri path" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/main_network_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="get network address" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- version -->
+    <TextView
+        android:id="@+id/main_text_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingBottom="0dp" />
+</LinearLayout>

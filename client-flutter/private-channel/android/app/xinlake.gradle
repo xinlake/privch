@@ -1,0 +1,27 @@
+// check signing config file
+def privatePropertiesFile = new File("$projectDir/../../../../../../../" +
+    ".Creator/SourceConfig/signing.properties")
+if (!privatePropertiesFile.exists()) {
+    throw new FileNotFoundException("signing.properties file not found.")
+}
+
+// load signing configurations
+def signingProperties = new Properties()
+privatePropertiesFile.withReader("UTF-8") { reader ->
+    signingProperties.load(reader)
+}
+
+// check signing configurations
+if (!signingProperties.containsKey("signing.storeFile") ||
+    !signingProperties.containsKey("signing.storePassword") ||
+    !signingProperties.containsKey("signing.keyAlias") ||
+    !signingProperties.containsKey("signing.keyPassword")) {
+    throw new Exception("errors in signing.properties.")
+}
+
+ext {
+    signingStoreFile = signingProperties.getProperty("signing.storeFile")
+    signingStorePassword = signingProperties.getProperty("signing.storePassword")
+    signingKeyAlias = signingProperties.getProperty("signing.keyAlias")
+    signingKeyPassword = signingProperties.getProperty("signing.keyPassword")
+}
