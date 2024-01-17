@@ -9,6 +9,7 @@ use std::{
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
+    target_os = "ios",
     target_os = "freebsd"
 ))]
 use std::{
@@ -20,6 +21,7 @@ use std::{
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
+    target_os = "ios",
     target_os = "freebsd"
 ))]
 use futures::{future, ready};
@@ -28,6 +30,7 @@ use pin_project::pin_project;
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
+    target_os = "ios",
     target_os = "freebsd"
 ))]
 use tokio::io::Interest;
@@ -35,7 +38,7 @@ use tokio::io::Interest;
 use crate::{context::Context, relay::socks5::Address, ServerAddr};
 
 use super::{
-    sys::{create_inbound_udp_socket, create_outbound_udp_socket},
+    sys::{bind_outbound_udp_socket, create_inbound_udp_socket, create_outbound_udp_socket},
     AcceptOpts,
     AddrFamily,
     ConnectOpts,
@@ -46,6 +49,7 @@ use super::{
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
+    target_os = "ios",
     target_os = "freebsd"
 ))]
 pub struct BatchSendMessage<'a> {
@@ -59,6 +63,7 @@ pub struct BatchSendMessage<'a> {
     target_os = "linux",
     target_os = "android",
     target_os = "macos",
+    target_os = "ios",
     target_os = "freebsd"
 ))]
 pub struct BatchRecvMessage<'a> {
@@ -127,6 +132,16 @@ impl UdpSocket {
         Ok(UdpSocket(socket))
     }
 
+    /// Binds to a specific address with opts
+    pub async fn connect_any_with_opts<AF: Into<AddrFamily>>(af: AF, opts: &ConnectOpts) -> io::Result<UdpSocket> {
+        create_outbound_udp_socket(af.into(), opts).await.map(UdpSocket)
+    }
+
+    /// Binds to a specific address with opts as an outbound socket
+    pub async fn bind_with_opts(addr: &SocketAddr, opts: &ConnectOpts) -> io::Result<UdpSocket> {
+        bind_outbound_udp_socket(addr, opts).await.map(UdpSocket)
+    }
+
     /// Binds to a specific address (inbound)
     #[inline]
     pub async fn listen(addr: &SocketAddr) -> io::Result<UdpSocket> {
@@ -139,16 +154,12 @@ impl UdpSocket {
         Ok(UdpSocket(socket))
     }
 
-    /// Binds to a specific address with opts
-    pub async fn connect_any_with_opts<AF: Into<AddrFamily>>(af: AF, opts: &ConnectOpts) -> io::Result<UdpSocket> {
-        create_outbound_udp_socket(af.into(), opts).await.map(UdpSocket)
-    }
-
     /// Batch send packets
     #[cfg(any(
         target_os = "linux",
         target_os = "android",
         target_os = "macos",
+        target_os = "ios",
         target_os = "freebsd"
     ))]
     pub fn poll_batch_send(
@@ -174,6 +185,7 @@ impl UdpSocket {
         target_os = "linux",
         target_os = "android",
         target_os = "macos",
+        target_os = "ios",
         target_os = "freebsd"
     ))]
     pub async fn batch_send(&self, msgs: &mut [BatchSendMessage<'_>]) -> io::Result<usize> {
@@ -184,6 +196,7 @@ impl UdpSocket {
     #[cfg(any(
         target_os = "linux",
         target_os = "android",
+        target_os = "ios",
         target_os = "macos",
         target_os = "freebsd"
     ))]
@@ -210,6 +223,7 @@ impl UdpSocket {
         target_os = "linux",
         target_os = "android",
         target_os = "macos",
+        target_os = "ios",
         target_os = "freebsd"
     ))]
     pub async fn batch_recv(&self, msgs: &mut [BatchRecvMessage<'_>]) -> io::Result<usize> {

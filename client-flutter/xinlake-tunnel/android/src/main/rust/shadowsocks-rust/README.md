@@ -39,7 +39,7 @@ Related Projects:
 - `local-http` - Allow using HTTP protocol for `sslocal`
 
   - `local-http-native-tls` - Support HTTPS with [`native-tls`](https://crates.io/crates/native-tls)
-  
+
   - `local-http-rustls` - Support HTTPS with [`rustls`](https://crates.io/crates/rustls)
 
 - `local-tunnel` - Allow using tunnel protocol for `sslocal`
@@ -89,6 +89,36 @@ For macOS and Linux, you can install it using [Homebrew](https://brew.sh/):
 brew install shadowsocks-rust
 ```
 
+### **Install using snap**
+
+```bash
+# Install from snapstore
+snap install shadowsocks-rust
+
+# List services
+snap services shadowsocks-rust
+
+# Enable and start shadowsocks-rust.sslocal-daemon snap service
+snap start --enable shadowsocks-rust.sslocal-daemon
+
+# Show generated systemd service status
+systemctl status snap.shadowsocks-rust.sslocal-daemon.service
+
+# Override generated systemd service (configure startup options)
+systemctl edit snap.shadowsocks-rust.sslocal-daemon.service
+
+## NOTE: you can pass args to sslocal:
+##  [Service]
+##  ExecStart=
+##  ExecStart=/usr/bin/snap run shadowsocks-rust.sslocal-daemon -b "127.0.0.1:1080" --server-url "ss://...."
+
+# Restart generated systemd service to apply changes
+systemctl restart snap.shadowsocks-rust.sslocal-daemon.service
+
+# ... and show service status
+systemctl status snap.shadowsocks-rust.sslocal-daemon.service
+```
+
 ### **Download release**
 
 Download static-linked build [here](https://github.com/shadowsocks/shadowsocks-rust/releases).
@@ -100,6 +130,8 @@ Download static-linked build [here](https://github.com/shadowsocks/shadowsocks-r
 ### **Docker**
 
 This project provided Docker images for the `linux/i386` and `linux/amd64` and `linux/arm64/v8` architectures.
+
+> :warning: **Docker containers do not have access to IPv6 by default**: Make sure to disable IPv6 Route in the client or [enable IPv6 access to docker containers](https://docs.docker.com/config/daemon/ipv6/#use-ipv6-for-the-default-bridge-network).
 
 #### Pull from GitHub Container Registry
 
@@ -177,7 +209,7 @@ servers:
 # Whether to download v2ray and xray plugin.
 downloadPlugins: false
 
-# Name of the ConfigMap with config.json configuration for shadowsocks-rust. 
+# Name of the ConfigMap with config.json configuration for shadowsocks-rust.
 configMapName: ""
 
 service:
@@ -241,13 +273,19 @@ Read `Cargo.toml` for more details.
 
 ## Getting Started
 
+Generate a safe and secured password for a specific encryption method (`aes-128-gcm` in the example) with:
+
+```bash
+ssservice genkey -m "aes-128-gcm"
+```
+
 Create a ShadowSocks' configuration file. Example
 
 ```jsonc
 {
     "server": "my_server_ip",
     "server_port": 8388,
-    "password": "mypassword",
+    "password": "rwQc8qPXVsRpGx3uW+Y3Lj4Y42yF9Bs0xg1pmx8/+bo=",
     "method": "aes-256-gcm",
     // ONLY FOR `sslocal`
     // Delete these lines if you are running `ssserver` or `ssmanager`
@@ -264,23 +302,23 @@ In shadowsocks-rust, we also have an extended configuration file format, which i
 {
     "servers": [
         {
-            "address": "127.0.0.1",
-            "port": 8388,
-            "password": "hello-world",
+            "server": "127.0.0.1",
+            "server_port": 8388,
+            "password": "rwQc8qPXVsRpGx3uW+Y3Lj4Y42yF9Bs0xg1pmx8/+bo=",
             "method": "aes-256-gcm",
             "timeout": 7200
         },
         {
-            "address": "127.0.0.1",
-            "port": 8389,
-            "password": "hello-kitty",
+            "server": "127.0.0.1",
+            "server_port": 8389,
+            "password": "/dliNXn5V4jg6vBW4MnC1I8Jljg9x7vSihmk6UZpRBM=",
             "method": "chacha20-ietf-poly1305"
         },
         {
             "disabled": true,
-            "address": "eg.disable.me",
-            "port": 8390,
-            "password": "hello-internet",
+            "server": "eg.disable.me",
+            "server_port": 8390,
+            "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24=",
             "method": "chacha20-ietf-poly1305"
         }
     ],
@@ -392,6 +430,30 @@ sslocal --protocol tun -s "[::1]:8388" -m "aes-256-gcm" -k "hello-kitty" --outbo
 ```
 
 It will create a Tun interface with address `10.255.0.1` and netmask `255.255.255.0`.
+
+### Local client for Windows Service
+
+Compile it by enabling `--features "winservice"` (not included in the default build):
+
+```bash
+cargo build --release "sswinservice" --features "winservice"
+```
+
+Install it as a Windows Service (PowerShell):
+
+```powershell
+New-Service -Name "shadowsocks-local-service" `
+            -DisplayName "Shadowsocks Local Service" `
+            -BinaryPathName "<Path\to>\sswinservice.exe local -c <Path\to>\local_config.json"
+```
+
+There are other ways to install `sswinservice` as a Windows Service, for example, the `sc` command.
+
+As you may have noticed that the `-BinaryPathName` contains not only just the `sswinservice.exe`, but `local -c local_config.json`. These command line parameters will be used as the default parameter when the Windows Service starts. You can also start the service with customized parameters.
+
+Learn more from [Microsoft's Document](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+
+The `sswinservice`'s parameter works exactly the same as `ssservice`. It supports `local`, `server` and `manager` subcommands.
 
 ### Server
 
@@ -525,6 +587,8 @@ Example configuration:
             // Listen address
             "local_address": "127.0.0.1",
             "local_port": 53,
+            // OPTIONAL. DNS local server uses `tcp_and_udp` mode by default
+            "mode": "udp_only",
             // Local DNS address, DNS queries will be sent directly to this address
             "local_dns_address": "114.114.114.114",
             // OPTIONAL. Local DNS's port, 53 by default
@@ -568,6 +632,11 @@ Example configuration:
     "password": "your-password",
     "plugin": "v2ray-plugin",
     "plugin_opts": "mode=quic;host=github.com",
+    "plugin_args": [
+        // Each line is an argument passed to "plugin"
+        "--verbose"
+    ],
+    "plugin_mode": "tcp_and_udp", // SIP003u, default is "tcp_only"
     // Server: TCP socket timeout in seconds.
     // Client: TCP connection timeout in seconds.
     // Omit this field if you don't have specific needs.
@@ -579,7 +648,7 @@ Example configuration:
     "servers": [
         {
             // Fields are the same as the single server's configuration
-            
+
             // Individual servers can be disabled
             // "disabled": true,
             "address": "0.0.0.0",
@@ -588,6 +657,8 @@ Example configuration:
             "password": "your-password",
             "plugin": "...",
             "plugin_opts": "...",
+            "plugin_args": [],
+            "plugin_mode": "...",
             "timeout": 7200,
 
             // Customized weight for local server's balancer
@@ -659,6 +730,8 @@ Example configuration:
     //
     // The field is only effective if feature "trust-dns" is enabled.
     "dns": "google",
+    // Configure `cache_size` for "trust-dns" ResolverOpts. Set to "0" to disable DNS cache.
+    "dns_cache_size": 0,
 
     // Mode, could be one of the
     // - tcp_only
@@ -755,6 +828,8 @@ The configuration file is set by `socks5_auth_config_path` in `locals`.
 
 - `2022-blake3-aes-128-gcm`, `2022-blake3-aes-256-gcm`
 - `2022-blake3-chacha20-poly1305`, `2022-blake3-chacha8-poly1305`
+
+These Ciphers require `"password"` to be a Base64 string of key that have **exactly the same length** of Cipher's Key Size. It is recommended to use `ssservice genkey -m "METHOD_NAME"` to generate a secured and safe key.
 
 ### AEAD Ciphers
 
@@ -863,6 +938,7 @@ It supports the following features:
 - [x] Load balancing (multiple servers) and server delay checking
 - [x] [SIP004](https://github.com/shadowsocks/shadowsocks-org/issues/30) AEAD ciphers
 - [x] [SIP003](https://github.com/shadowsocks/shadowsocks-org/issues/28) Plugins
+- [x] [SIP003u](https://github.com/shadowsocks/shadowsocks-org/issues/180) Plugin with UDP support
 - [x] [SIP002](https://github.com/shadowsocks/shadowsocks-org/issues/27) Extension ss URLs
 - [x] [SIP022](https://github.com/shadowsocks/shadowsocks-org/issues/196) AEAD 2022 ciphers
 - [x] HTTP Proxy Supports ([RFC 7230](http://tools.ietf.org/html/rfc7230) and [CONNECT](https://tools.ietf.org/html/draft-luotonen-web-proxy-tunneling-01))
