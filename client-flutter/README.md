@@ -22,6 +22,9 @@
 | [xinlake-tunnel](./xinlake-tunnel/) | Flutter 软件库，底层加密通讯隧道，支持 Shadowsocks 协议，Android 系统上使用 VPN 接口，Windows 系统上使用 Proxy 接口 |
 
 ## 编译
+你也可以直接下载已经编译好的二进制文件：
+- Android：[xinlake.privch-v0.10.2-release.apk](https://github.com/xinlake/privch/raw/dev/client-flutter/.lfs/binary/xinlake.privch-v0.10.2-release.apk)
+
 ### Android 客户端应用
 1. [准备 Flutter 开发环境](https://docs.flutter.dev/get-started/install/windows/mobile?tab=download)。
 2. 配置 Android Studio 构建工具链，安装以下组件。[*了解更多*](https://developer.android.com/studio/projects/install-ndk)
