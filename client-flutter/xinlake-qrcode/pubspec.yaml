@@ -1,16 +1,16 @@
 # cSpell: disable
 
 name: xinlake_qrcode
-version: 0.5.1
+version: 0.6.0
 publish_to: 'none'
 
 description: Xinlake QRCode plugin.
-repository: https://github.com/xinlake/privch/tree/main/xinlake-qrcode
+repository: https://github.com/xinlake/privch/tree/main/client-flutter/xinlake-qrcode
 issue_tracker: https://github.com/xinlake/privch/issues
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.2.4 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:

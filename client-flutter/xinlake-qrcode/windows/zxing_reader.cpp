@@ -27,7 +27,7 @@
 
 using namespace ZXing;
 
-static void zxing_read_image(ImageView& image, flutter::EncodableList& codeList);
+static void zxing_read_image(ImageView& image, ReaderOptions& options, flutter::EncodableList& codeList);
 
 void readImage(const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
@@ -48,20 +48,27 @@ void readImage(const flutter::MethodCall<flutter::EncodableValue>& method_call,
         return;
     }
 
+    // zxing options
+    ReaderOptions options;
+    options.setTextMode(TextMode::HRI);
+    options.setEanAddOnSymbol(EanAddOnSymbol::Read);
+
+    // results
     flutter::EncodableList codeList;
+
     for (const auto& imageItem : imageList) {
         const std::string imagePath = std::get<std::string>(imageItem);
 
         int width, height, channels;
         std::unique_ptr<stbi_uc, void(*)(void*)> buffer(
-            stbi_load(imagePath.c_str(), &width, &height, &channels, 4),
+            stbi_load(imagePath.c_str(), &width, &height, &channels, 3), // 4
             stbi_image_free);
         if (buffer == nullptr) {
             continue;
         }
 
-        ImageView image{ buffer.get(), width, height, ImageFormat::RGBX };
-        zxing_read_image(image, codeList);
+        ImageView image{ buffer.get(), width, height, ImageFormat::RGB }; // RGBX
+        zxing_read_image(image, options, codeList);
     }
 
     result->Success(codeList);
@@ -70,6 +77,12 @@ void readImage(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 void readScreen(const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
 
+    // zxing options
+    ReaderOptions options;
+    options.setTextMode(TextMode::HRI);
+    options.setEanAddOnSymbol(EanAddOnSymbol::Read);
+
+    // results
     flutter::EncodableList codeList;
 
     // copy screen to bitmap
@@ -94,7 +107,7 @@ void readScreen(const flutter::MethodCall<flutter::EncodableValue>& method_call,
                 ImageView image{ (unsigned char*)bitmapData,
                     screenBitmap.bmWidth, screenBitmap.bmHeight,
                     ImageFormat::RGBX };
-                zxing_read_image(image, codeList);
+                zxing_read_image(image, options, codeList);
             }
 
             delete[] bitmapData;
@@ -112,11 +125,8 @@ void readScreen(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 }
 
 
-static void zxing_read_image(ImageView& image, flutter::EncodableList& codeList) {
-    DecodeHints hints;
-    hints.setEanAddOnSymbol(EanAddOnSymbol::Read);
-
-    auto results = ReadBarcodes(image, hints);
+static void zxing_read_image(ImageView& image, ReaderOptions& options, flutter::EncodableList& codeList) {
+    auto results = ReadBarcodes(image, options);
     if (results.empty()) {
         results.emplace_back(); // DecodeStatus::NotFound
         return;

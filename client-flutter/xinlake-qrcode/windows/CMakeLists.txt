@@ -17,7 +17,7 @@ cmake_policy(VERSION 3.14...3.25)
 set(PLUGIN_NAME "xinlake_qrcode_plugin")
 
 # zxing cpp
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/zxing-core" zxing-cpp EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/zxing-cpp" zxing-cpp EXCLUDE_FROM_ALL)
 
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
@@ -56,7 +56,7 @@ target_include_directories(${PLUGIN_NAME}
   PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../cpp/stb"
 )
 
-# Xinalke
+# Xinlake
 # There are warnings for stb-image package when compiling at W4 level. 
 target_compile_options(${PLUGIN_NAME} PRIVATE /W3 /WX /wd4100)
 
