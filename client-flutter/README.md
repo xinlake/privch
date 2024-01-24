@@ -16,6 +16,8 @@
 |---------|---------|
 | [private-channel](./private-channel/) | 跨平台客户端应用程序 |
 | [xinlake-text](./xinlake-text/) | Flutter 软件库，文本处理工具 |
+| [xinlake-responsive](./xinlake-responsive/) | Flutter 软件库，一些控件 |
+| [xready-animations](./xready-animations/) | Flutter 软件库，一个动画集合 |
 | [xinlake-qrcode](./xinlake-qrcode/) | Flutter 软件库，从图像文件、摄像头（Android）、截屏（Windows）读取二维码信息 |
 | [xinlake-platform](./xinlake-platform/) | Flutter 软件库，支持 Flutter 应用与操作系统的交互 |
 | [xinlake-window](./xinlake-window/) | Flutter 软件库，控制 Flutter Windows 桌面应用的 Windows 原生窗口 |
@@ -23,7 +25,7 @@
 
 ## 编译
 你也可以直接下载已经编译好的二进制文件：
-- Android：[xinlake.privch-v0.10.2-release.apk](https://github.com/xinlake/privch/raw/dev/client-flutter/.lfs/binary/xinlake.privch-v0.10.2-release.apk)
+- Android：[xinlake.privch-v0.11.0-release.apk](https://github.com/xinlake/privch/raw/dev/client-flutter/.lfs/binary/xinlake.privch-v0.11.0-release.apk)
 
 ### Android 客户端应用
 1. [准备 Flutter 开发环境](https://docs.flutter.dev/get-started/install/windows/mobile?tab=download)。

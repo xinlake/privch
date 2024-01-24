@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:xinlake_tunnel/shadowsocks.dart';
+import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
-class ShadowsocksProvider extends Shadowsocks with ChangeNotifier {
-  ShadowsocksProvider(Shadowsocks shadowsocks, bool create)
+class ShadowsocksProvider extends xt.Shadowsocks with ChangeNotifier {
+  ShadowsocksProvider(xt.Shadowsocks shadowsocks, bool create)
       : _enableRestore = !create,
         _passwordInvisible = !create,
         _nameChange = shadowsocks.name,

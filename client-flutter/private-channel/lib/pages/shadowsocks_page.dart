@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:xinlake_text/validators.dart' as xv;
-import 'package:xinlake_tunnel/shadowsocks.dart';
+import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
 import '../config.dart' as config;
 import '../providers/shadowsocks_provider.dart';
@@ -392,7 +392,7 @@ class _State extends State<ShadowsocksView> {
                           spacing: config.spacing,
                           runSpacing: config.spacing,
                           crossAxisAlignment: WrapCrossAlignment.center,
-                          children: Shadowsocks.encryptMethods.map((encryption) {
+                          children: xt.Shadowsocks.encryptMethods.map((encryption) {
                             bool selected = encryption == shadowsocksProvider.encrypt;
                             return selected
                                 ? Container(

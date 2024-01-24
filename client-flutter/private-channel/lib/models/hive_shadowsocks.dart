@@ -1,20 +1,20 @@
 import 'package:hive/hive.dart';
-import 'package:xinlake_tunnel/shadowsocks.dart';
+import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
 // type id can not greater than 300
 /// typeId: 31
-class ShadowsocksAdapter extends TypeAdapter<Shadowsocks> {
+class ShadowsocksAdapter extends TypeAdapter<xt.Shadowsocks> {
   @override
   int get typeId => 31;
 
   @override
-  Shadowsocks read(BinaryReader reader) {
+  xt.Shadowsocks read(BinaryReader reader) {
     final map = reader.readMap();
-    return Shadowsocks.fromMap(map);
+    return xt.Shadowsocks.fromMap(map);
   }
 
   @override
-  void write(BinaryWriter writer, Shadowsocks obj) {
+  void write(BinaryWriter writer, xt.Shadowsocks obj) {
     writer.writeMap(obj.toMap());
   }
 }

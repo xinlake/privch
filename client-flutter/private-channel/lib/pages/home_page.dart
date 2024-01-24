@@ -62,21 +62,21 @@ class _State extends State<HomePage> {
       automaticallyImplyLeading: false,
       backgroundColor: appBarColor,
       centerTitle: true,
-      title: switch (context.select<HomeProvider, HomeContent>((homeProvider) {
+      title: switch (context.select<HomeProvider, HomeTab>((homeProvider) {
         return homeProvider.homeContent;
       })) {
-        HomeContent.dashboard => const SizedBox(),
-        HomeContent.servers => Text(
+        HomeTab.dashboard => const SizedBox(),
+        HomeTab.servers => Text(
             "${_appLocales.servers} (${context.read<ServerProvider>().serverList.length})",
           ),
-        HomeContent.settings => Text(_appLocales.settings),
+        HomeTab.settings => Text(_appLocales.settings),
       },
-      actions: switch (context.select<HomeProvider, HomeContent>((homeProvider) {
+      actions: switch (context.select<HomeProvider, HomeTab>((homeProvider) {
         return homeProvider.homeContent;
       })) {
-        HomeContent.dashboard => null,
-        HomeContent.servers => null,
-        HomeContent.settings => [
+        HomeTab.dashboard => null,
+        HomeTab.servers => null,
+        HomeTab.settings => [
             MenuAnchor(
               builder: (context, controller, child) {
                 return IconButton(
@@ -110,9 +110,9 @@ class _State extends State<HomePage> {
     return Consumer<HomeProvider>(
       builder: (context, homeProvider, child) {
         return switch (homeProvider.homeContent) {
-          HomeContent.dashboard => DashboardView(appBarColor: appBarColor),
-          HomeContent.servers => ShadowsocksList(appBarColor: appBarColor),
-          HomeContent.settings => const SettingView(),
+          HomeTab.dashboard => DashboardView(appBarColor: appBarColor),
+          HomeTab.servers => ShadowsocksList(appBarColor: appBarColor),
+          HomeTab.settings => const SettingView(),
         };
       },
     );
@@ -140,19 +140,19 @@ class _State extends State<HomePage> {
                 children: [
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeContent.dashboard
-                          ? () => homeProvider.setHomeContent(HomeContent.dashboard)
+                      onPressed: homeProvider.homeContent != HomeTab.dashboard
+                          ? () => homeProvider.setHomeContent(HomeTab.dashboard)
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            homeProvider.homeContent == HomeContent.dashboard ? activeColor : null,
+                            homeProvider.homeContent == HomeTab.dashboard ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          homeProvider.homeContent == HomeContent.dashboard
+                          homeProvider.homeContent == HomeTab.dashboard
                               ? const Icon(Icons.dashboard)
                               : const Icon(Icons.dashboard_outlined),
                           Text(
@@ -165,19 +165,19 @@ class _State extends State<HomePage> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeContent.servers
-                          ? () => homeProvider.setHomeContent(HomeContent.servers)
+                      onPressed: homeProvider.homeContent != HomeTab.servers
+                          ? () => homeProvider.setHomeContent(HomeTab.servers)
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            (homeProvider.homeContent == HomeContent.servers) ? activeColor : null,
+                            (homeProvider.homeContent == HomeTab.servers) ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          (homeProvider.homeContent == HomeContent.servers)
+                          (homeProvider.homeContent == HomeTab.servers)
                               ? const Icon(Icons.view_list)
                               : const Icon(Icons.view_list_outlined),
                           Text(
@@ -190,19 +190,19 @@ class _State extends State<HomePage> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeContent.settings
-                          ? () => homeProvider.setHomeContent(HomeContent.settings)
+                      onPressed: homeProvider.homeContent != HomeTab.settings
+                          ? () => homeProvider.setHomeContent(HomeTab.settings)
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            homeProvider.homeContent == HomeContent.settings ? activeColor : null,
+                            homeProvider.homeContent == HomeTab.settings ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          homeProvider.homeContent == HomeContent.settings
+                          homeProvider.homeContent == HomeTab.settings
                               ? const Icon(Icons.settings)
                               : const Icon(Icons.settings_outlined),
                           Text(

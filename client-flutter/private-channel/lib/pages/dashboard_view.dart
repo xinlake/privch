@@ -47,7 +47,7 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
     // manually
     if (dashboardProvider.connectionMode == ConnectionMode.manual) {
       if (serverProvider.selected == null) {
-        await homeProvider.setHomeContent(HomeContent.servers);
+        await homeProvider.setHomeContent(HomeTab.servers);
         return;
       }
 
@@ -75,7 +75,7 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
     // automatic
     else {
       if (serverProvider.serverList.isEmpty) {
-        await homeProvider.setHomeContent(HomeContent.servers);
+        await homeProvider.setHomeContent(HomeTab.servers);
         return;
       }
 

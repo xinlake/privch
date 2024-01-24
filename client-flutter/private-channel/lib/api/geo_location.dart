@@ -54,10 +54,10 @@ class GeoLocationService {
         final city = jsonBody[keyCity] as String?;
 
         var location = country ?? "";
-        if (region != null && region.isNotEmpty) {
+        if (region?.isNotEmpty ?? false) {
           location += " $region";
         }
-        if (city != null && city.isNotEmpty) {
+        if (city?.isNotEmpty ?? false) {
           location += " $city";
         }
 

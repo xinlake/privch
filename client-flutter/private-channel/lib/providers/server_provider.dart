@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xinlake_tunnel/xinlake_tunnel.dart';
+import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
 enum ServerAddingMethod { scanScreen, scanQrcode, importImage, create }
 
@@ -13,16 +13,16 @@ class ServerProvider with ChangeNotifier {
   final _keySortModeIndex = "Server-SortMode-Index";
 
   late final SharedPreferences _preferences;
-  late final Box<Shadowsocks> _serverBox;
+  late final Box<xt.Shadowsocks> _serverBox;
 
   bool get serverEmpty => _serverBox.isEmpty;
-  List<Shadowsocks> get serverList => _serverBox.values.toList();
+  List<xt.Shadowsocks> get serverList => _serverBox.values.toList();
 
   // selected server
-  Shadowsocks? _selected;
-  Shadowsocks? get selected => _selected;
+  xt.Shadowsocks? _selected;
+  xt.Shadowsocks? get selected => _selected;
 
-  Future<void> setSelected(Shadowsocks shadowsocks) async {
+  Future<void> setSelected(xt.Shadowsocks shadowsocks) async {
     if (_selected != shadowsocks) {
       _selected = shadowsocks;
 
@@ -79,12 +79,12 @@ class ServerProvider with ChangeNotifier {
 
   // SERVERS ---
   // get server by id
-  Shadowsocks? getServer(String id) {
+  xt.Shadowsocks? getServer(String id) {
     return _serverBox.get(id);
   }
 
   /// onOverWrite: return true to continue overwrite, return else to cancel overwrite
-  Future<void> put(Shadowsocks shadowsocks, {bool Function()? onOverWrite}) async {
+  Future<void> put(xt.Shadowsocks shadowsocks, {bool Function()? onOverWrite}) async {
     if (onOverWrite != null && _serverBox.containsKey(shadowsocks.id)) {
       if (onOverWrite.call() == false) {
         return;
@@ -95,7 +95,7 @@ class ServerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> putAll(List<Shadowsocks> ssList) async {
+  Future<void> putAll(List<xt.Shadowsocks> ssList) async {
     for (var shadowsocks in ssList) {
       await _serverBox.put(shadowsocks.id, shadowsocks);
     }
@@ -104,7 +104,7 @@ class ServerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> delete(Shadowsocks shadowsocks) async {
+  Future<void> delete(xt.Shadowsocks shadowsocks) async {
     await _serverBox.delete(shadowsocks.id);
     notifyListeners();
   }

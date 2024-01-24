@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum HomeContent {
+enum HomeTab {
   dashboard,
   servers,
   settings,
 }
 
 class HomeProvider with ChangeNotifier {
-  final _keyHomeContentIndex = "Home-Content-Index";
+  final _keyHomeContentIndex = "Home-Tab-Index";
 
   late final SharedPreferences _preferences;
 
   // content view
-  HomeContent _homeContent = HomeContent.dashboard;
-  HomeContent get homeContent => _homeContent;
+  HomeTab _homeContent = HomeTab.dashboard;
+  HomeTab get homeContent => _homeContent;
 
-  Future<void> setHomeContent(HomeContent content) async {
+  Future<void> setHomeContent(HomeTab content) async {
     if (_homeContent != content) {
       _homeContent = content;
 

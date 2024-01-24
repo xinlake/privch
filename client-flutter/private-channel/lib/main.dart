@@ -1,11 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:xinlake_tunnel/shadowsocks.dart';
+import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
 import 'config.dart' as config;
 import 'models/hive_shadowsocks.dart';
@@ -20,20 +21,28 @@ import 'providers/shadowsocks_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // init local db.
-  if (kIsWeb) {
-    Hive.init(null);
-  } else {
-    // data directory
-    final dataDir = await path.getApplicationDocumentsDirectory();
-    Hive.init(dataDir.path);
-  }
+  // init local db
+  try {
+    var dataDir = await path.getApplicationDocumentsDirectory();
+    if (Platform.isWindows) {
+      dataDir = Directory("${dataDir.path}\\Xinlake\\PrivateChannel")..createSync(recursive: true);
+    }
 
-  Hive.registerAdapter(ShadowsocksAdapter());
+    Hive.init(dataDir.path);
+    Hive.registerAdapter(ShadowsocksAdapter());
+  } catch (error) {
+    // TODO: error page
+  }
 
   runApp(
     MultiProvider(
       providers: [
+        Provider(
+          create: (context) => ProviderState(),
+        ),
+        ChangeNotifierProvider<HomeProvider>(
+          create: (context) => HomeProvider(),
+        ),
         ChangeNotifierProvider<SettingProvider>(
           create: (context) => SettingProvider(),
         ),
@@ -43,22 +52,23 @@ void main() async {
         ChangeNotifierProvider<DashboardProvider>(
           create: (context) => DashboardProvider(),
         ),
-        ChangeNotifierProvider<HomeProvider>(
-          create: (context) => HomeProvider(),
-        ),
       ],
       child: const PrivateChannelApp(),
     ),
   );
 }
 
+class ProviderState {
+  bool initialized = false;
+}
+
 class PrivateChannelApp extends StatelessWidget {
-  static var _initialized = false;
   const PrivateChannelApp({super.key});
 
   Future<void> _initialize(BuildContext context) async {
-    // not necessary
-    if (!_initialized) {
+    if (!context.read<ProviderState>().initialized) {
+      context.read<ProviderState>().initialized = true;
+
       final homeProvider = context.read<HomeProvider>();
       final settingProvider = context.read<SettingProvider>();
       final serverProvider = context.read<ServerProvider>();
@@ -68,8 +78,6 @@ class PrivateChannelApp extends StatelessWidget {
       await settingProvider.initialize();
       await serverProvider.initialize();
       await dashboardProvider.initialize();
-
-      _initialized = true;
     }
   }
 
@@ -128,10 +136,10 @@ class PrivateChannelApp extends StatelessWidget {
           },
           onGenerateRoute: (route) {
             return switch (route.name) {
-              config.AppRoute.shadowsocks => MaterialPageRoute<Shadowsocks>(
+              config.AppRoute.shadowsocks => MaterialPageRoute<xt.Shadowsocks>(
                   builder: (context) => ChangeNotifierProvider<ShadowsocksProvider>(
                     create: (BuildContext context) {
-                      final args = route.arguments as (Shadowsocks, bool);
+                      final args = route.arguments as (xt.Shadowsocks, bool);
                       return ShadowsocksProvider(args.$1, args.$2);
                     },
                     child: const ShadowsocksView(),
@@ -191,7 +199,8 @@ class PrivateChannelApp extends StatelessWidget {
     return FutureBuilder<void>(
       future: _initialize(context),
       builder: (BuildContext context, snapshot) {
-        if (!_initialized && snapshot.connectionState != ConnectionState.done) {
+        if (!context.read<ProviderState>().initialized &&
+            snapshot.connectionState != ConnectionState.done) {
           return _buildLoading(context);
         }
         return _buildApp();
