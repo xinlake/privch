@@ -1,0 +1,1 @@
+Forked form https://github.com/jogboms/flutter_spinkit
