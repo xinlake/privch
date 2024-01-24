@@ -1,16 +1,16 @@
 # cspell:disable
 
 name: xinlake_platform
-version: 0.6.1
+version: 0.7.0
 publish_to: 'none'
 
 description: Platform implements collection.
-repository: https://github.com/xinlake/privch/tree/main/xinlake-platform
+repository: https://github.com/xinlake/privch/tree/main/client-flutter/xinlake-platform
 issue_tracker: https://github.com/xinlake/privch/issues
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.2.4 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:
@@ -20,7 +20,7 @@ dependencies:
     sdk: flutter
 
   plugin_platform_interface: ^2.1.4
-  http: ^1.1.2
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:

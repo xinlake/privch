@@ -24,7 +24,7 @@ apply plugin: 'com.android.library'
 android {
     namespace "xinlake.platform"
 
-    buildToolsVersion "33.0.2"
+    buildToolsVersion="33.0.2"
     compileSdk 33
 
     compileOptions {
