@@ -1,7 +1,7 @@
 # cSpell:disable
 
 name: xinlake_text
-version: 0.4.0
+version: 0.5.0
 publish_to: 'none'
 
 description: A collection of commonly used text functions.
@@ -10,7 +10,7 @@ issue_tracker: https://github.com/xinlake/privch/issues
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.2.4 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:

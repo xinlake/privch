@@ -1,3 +1,24 @@
+// The MIT License (MIT)
+// Copyright (c) 2018 Luis Vargas, Karan Goel
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 import 'dart:convert';
 import 'dart:math' as math;
 
@@ -546,67 +567,3 @@ bool isVIN(String str) {
   return vin.valid();
 }
 */
-
-var _threeDigit = RegExp(r'^\d{3}$');
-var _fourDigit = RegExp(r'^\d{4}$');
-var _fiveDigit = RegExp(r'^\d{5}$');
-var _sixDigit = RegExp(r'^\d{6}$');
-var _postalCodePatterns = {
-  "AD": RegExp(r'^AD\d{3}$'),
-  "AT": _fourDigit,
-  "AU": _fourDigit,
-  "BE": _fourDigit,
-  "BG": _fourDigit,
-  "CA": RegExp(r'^[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][\s\-]?\d[ABCEGHJ-NPRSTV-Z]\d$',
-      caseSensitive: false),
-  "CH": _fourDigit,
-  "CZ": RegExp(r'^\d{3}\s?\d{2}$'),
-  "DE": _fiveDigit,
-  "DK": _fourDigit,
-  "DZ": _fiveDigit,
-  "EE": _fiveDigit,
-  "ES": _fiveDigit,
-  "FI": _fiveDigit,
-  "FR": RegExp(r'^\d{2}\s?\d{3}$'),
-  "GB": RegExp(r'^(gir\s?0aa|[a-z]{1,2}\d[\da-z]?\s?(\d[a-z]{2})?)$', caseSensitive: false),
-  "GR": RegExp(r'^\d{3}\s?\d{2}$'),
-  "HR": RegExp(r'^([1-5]\d{4}$)'),
-  "HU": _fourDigit,
-  "ID": _fiveDigit,
-  "IL": _fiveDigit,
-  "IN": _sixDigit,
-  "IS": _threeDigit,
-  "IT": _fiveDigit,
-  "JP": RegExp(r'^\d{3}\-\d{4}$'),
-  "KE": _fiveDigit,
-  "LI": RegExp(r'^(948[5-9]|949[0-7])$'),
-  "LT": RegExp(r'^LT\-\d{5}$'),
-  "LU": _fourDigit,
-  "LV": RegExp(r'^LV\-\d{4}$'),
-  "MX": _fiveDigit,
-  "NL": RegExp(r'^\d{4}\s?[a-z]{2}$', caseSensitive: false),
-  "NO": _fourDigit,
-  "PL": RegExp(r'^\d{2}\-\d{3}$'),
-  "PT": RegExp(r'^\d{4}\-\d{3}?$'),
-  "RO": _sixDigit,
-  "RU": _sixDigit,
-  "SA": _fiveDigit,
-  "SE": RegExp(r'^\d{3}\s?\d{2}$'),
-  "SI": _fourDigit,
-  "SK": RegExp(r'^\d{3}\s?\d{2}$'),
-  "TN": _fourDigit,
-  "TW": RegExp(r'^\d{3}(\d{2})?$'),
-  "UA": _fiveDigit,
-  "US": RegExp(r'^\d{5}(-\d{4})?$'),
-  "ZA": _fourDigit,
-  "ZM": _fiveDigit
-};
-
-bool isPostalCode(String? text, String locale, {bool Function()? orElse}) {
-  final pattern = _postalCodePatterns[locale];
-  return pattern != null
-      ? pattern.hasMatch(text!)
-      : orElse != null
-          ? orElse()
-          : throw const FormatException();
-}
