@@ -15,13 +15,6 @@ static int maxHeight = 0;
 static int minWidth = 0;
 static int minHeight = 0;
 
-void initPlacement() {
-    HWND handle = GetActiveWindow();
-    // before default window proc
-    defWindowProc = reinterpret_cast<WNDPROC>(GetWindowLongPtr(handle, GWLP_WNDPROC));
-    SetWindowLongPtr(handle, GWLP_WNDPROC, (LONG_PTR)windowProc);
-}
-
 /* full screen
  */
 void getFullScreen(const flutter::MethodCall<flutter::EncodableValue>& method_call,
@@ -143,95 +136,67 @@ void setWindowPlacement(const flutter::MethodCall<flutter::EncodableValue>& meth
 
 /* min size
  */
-void getWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+void getWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
 
     flutter::EncodableMap map;
-    map[flutter::EncodableValue("width")] = minWidth;
-    map[flutter::EncodableValue("height")] = minHeight;
+    map[flutter::EncodableValue("min-width")] = minWidth;
+    map[flutter::EncodableValue("min-height")] = minHeight;
+    map[flutter::EncodableValue("max-width")] = maxWidth;
+    map[flutter::EncodableValue("max-height")] = maxHeight;
 
     result->Success(flutter::EncodableValue(map));
 }
 
-void setWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+void setWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-    int width = 0;
-    int height = 0;
+    int minW = 0;
+    int minH = 0;
+    int maxW = 0;
+    int maxH = 0;
 
     const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
     if (arguments) {
-        auto width_it = arguments->find(flutter::EncodableValue("width"));
-        if (width_it != arguments->end()) {
-            width = std::get<int>(width_it->second);
+        auto minWidthIt = arguments->find(flutter::EncodableValue("min-width"));
+        if (minWidthIt != arguments->end()) {
+            minW = std::get<int>(minWidthIt->second);
         }
-        auto height_it = arguments->find(flutter::EncodableValue("height"));
-        if (height_it != arguments->end()) {
-            height = std::get<int>(height_it->second);
+        auto minHeightIt = arguments->find(flutter::EncodableValue("min-height"));
+        if (minHeightIt != arguments->end()) {
+            minH = std::get<int>(minHeightIt->second);
+        }
+        auto maxWidthIt = arguments->find(flutter::EncodableValue("max-width"));
+        if (maxWidthIt != arguments->end()) {
+            maxW = std::get<int>(maxWidthIt->second);
+        }
+        auto maxHeightIt = arguments->find(flutter::EncodableValue("max-height"));
+        if (maxHeightIt != arguments->end()) {
+            maxH = std::get<int>(maxHeightIt->second);
         }
     }
-    if (width < 1 || height < 1) {
+    if (minW < 1 || minH < 1 || maxW < 1 || maxH < 1) {
         result->Error("Invalid argument", "width or height not provided");
         return;
     }
 
-    minWidth = width;
-    minHeight = height;
+    minWidth = minW;
+    minHeight = minH;
+    maxWidth = maxW;
+    maxHeight = maxH;
+
+    HWND handle = GetActiveWindow();
+    // before default window proc
+    defWindowProc = reinterpret_cast<WNDPROC>(GetWindowLongPtr(handle, GWLP_WNDPROC));
+    SetWindowLongPtr(handle, GWLP_WNDPROC, (LONG_PTR)windowProc);
 
     updateWindowSize();
     result->Success(flutter::EncodableValue(nullptr));
 }
 
-void resetWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+void resetWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
     minWidth = 0;
     minHeight = 0;
-
-    updateWindowSize();
-    result->Success(flutter::EncodableValue(nullptr));
-}
-
-/* max size
- */
-void getWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-
-    flutter::EncodableMap map;
-    map[flutter::EncodableValue("width")] = maxWidth;
-    map[flutter::EncodableValue("height")] = maxHeight;
-
-    result->Success(flutter::EncodableValue(map));
-}
-
-void setWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-    int width = 0;
-    int height = 0;
-
-    const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-    if (arguments) {
-        auto width_it = arguments->find(flutter::EncodableValue("width"));
-        if (width_it != arguments->end()) {
-            width = std::get<int>(width_it->second);
-        }
-        auto height_it = arguments->find(flutter::EncodableValue("height"));
-        if (height_it != arguments->end()) {
-            height = std::get<int>(height_it->second);
-        }
-    }
-    if (width < 1 || height < 1) {
-        result->Error("Invalid argument", "width or height not provided");
-        return;
-    }
-
-    maxWidth = width;
-    maxHeight = height;
-
-    updateWindowSize();
-    result->Success(flutter::EncodableValue(nullptr));
-}
-
-void resetWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
     maxWidth = 0;
     maxHeight = 0;
 
@@ -262,7 +227,7 @@ void setStayOnTop(const flutter::MethodCall<flutter::EncodableValue>& method_cal
     result->Success(flutter::EncodableValue(nullptr));
 }
 
-/* internal --------CALLBACK
+/* internal
  */
 static LRESULT windowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     if (message == WM_GETMINMAXINFO) {

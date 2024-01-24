@@ -1,12 +1,12 @@
 name: xinlake_window
-version: 0.6.0
+version: 0.7.0
 publish_to: 'none'
 
 description: Interface for controlling native windows.
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.2.4 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:

@@ -35,26 +35,15 @@ extern void getWindowPlacement(const flutter::MethodCall<flutter::EncodableValue
 extern void setWindowPlacement(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-/* min size
+/* window limit
  */
-extern void getWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+extern void getWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-extern void setWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+extern void setWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-extern void resetWindowMinSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-/* max size
- */
-extern void getWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-extern void setWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
-	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-extern void resetWindowMaxSize(const flutter::MethodCall<flutter::EncodableValue>& method_call,
+extern void resetWindowLimit(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 	std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
 /* stay on top
@@ -103,9 +92,6 @@ namespace xinlake_window {
 			});
 
 		registrar->AddPlugin(std::move(plugin));
-
-		// initPlacement window placement
-		initPlacement();
 	}
 
 	XinlakeWindowPlugin::XinlakeWindowPlugin() {}
@@ -132,23 +118,14 @@ namespace xinlake_window {
 		else if (method_name == "setWindowPlacement") {
 			setWindowPlacement(method_call, std::move(result));
 		}
-		else if (method_name == "getWindowMinSize") {
-			getWindowMinSize(method_call, std::move(result));
+		else if (method_name == "getWindowLimit") {
+			getWindowLimit(method_call, std::move(result));
 		}
-		else if (method_name == "setWindowMinSize") {
-			setWindowMinSize(method_call, std::move(result));
+		else if (method_name == "setWindowLimit") {
+			setWindowLimit(method_call, std::move(result));
 		}
-		else if (method_name == "resetWindowMinSize") {
-			resetWindowMinSize(method_call, std::move(result));
-		}
-		else if (method_name == "getWindowMaxSize") {
-			getWindowMaxSize(method_call, std::move(result));
-		}
-		else if (method_name == "setWindowMaxSize") {
-			setWindowMaxSize(method_call, std::move(result));
-		}
-		else if (method_name == "resetWindowMaxSize") {
-			resetWindowMaxSize(method_call, std::move(result));
+		else if (method_name == "resetWindowLimit") {
+			resetWindowLimit(method_call, std::move(result));
 		}
 		else if (method_name == "setStayOnTop") {
 			setStayOnTop(method_call, std::move(result));

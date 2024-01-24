@@ -99,22 +99,37 @@ class MethodChannelXinlakeWindow extends XinlakeWindowPlatform {
   }
 
   @override
-  Future<Size?> getWindowMinSize() async {
-    final map = await methodChannel.invokeMapMethod<String, int>('getWindowMinSize');
-    if (map != null) {
-      int width = map['width']!;
-      int height = map['height']!;
-      return Size(width.toDouble(), height.toDouble());
+  Future<(int, int, int, int)?> getWindowLimit() async {
+    try {
+      final map = await methodChannel.invokeMapMethod<String, int>('getWindowLimit');
+      if (map != null) {
+        return (
+          map['min-width']!,
+          map['min-height']!,
+          map['max-width']!,
+          map['max-height']!,
+        );
+      }
+    } catch (error) {
+      // ignored
     }
+
     return null;
   }
 
   @override
-  Future<bool> setWindowMinSize(int width, int height) async {
+  Future<bool> setWindowLimit(
+    int minWidth,
+    int minHeight,
+    int maxWidth,
+    int maxHeight,
+  ) async {
     try {
-      await methodChannel.invokeMethod('setWindowMinSize', {
-        'width': width,
-        'height': height,
+      await methodChannel.invokeMethod('setWindowLimit', {
+        "min-width": minWidth,
+        "min-height": minHeight,
+        "max-width": maxWidth,
+        "max-height": maxHeight,
       });
       return true;
     } catch (exception) {
@@ -123,37 +138,8 @@ class MethodChannelXinlakeWindow extends XinlakeWindowPlatform {
   }
 
   @override
-  Future<void> resetWindowMinSize() async {
-    await methodChannel.invokeMethod('resetWindowMinSize');
-  }
-
-  @override
-  Future<Size?> getWindowMaxSize() async {
-    final map = await methodChannel.invokeMapMethod<String, int>('getWindowMaxSize');
-    if (map != null) {
-      int width = map['width']!;
-      int height = map['height']!;
-      return Size(width.toDouble(), height.toDouble());
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> setWindowMaxSize(int width, int height) async {
-    try {
-      await methodChannel.invokeMethod('setWindowMaxSize', {
-        'width': width,
-        'height': height,
-      });
-      return true;
-    } catch (exception) {
-      return false;
-    }
-  }
-
-  @override
-  Future<void> resetWindowMaxSize() async {
-    await methodChannel.invokeMethod('resetWindowMaxSize');
+  Future<void> resetWindowLimit() async {
+    await methodChannel.invokeMethod('resetWindowLimit');
   }
 
   @override

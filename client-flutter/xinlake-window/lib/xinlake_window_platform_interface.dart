@@ -54,27 +54,15 @@ abstract class XinlakeWindowPlatform extends PlatformInterface {
     throw UnimplementedError('Not Implemented.');
   }
 
-  Future<Size?> getWindowMinSize() {
+  Future<(int, int, int, int)?> getWindowLimit() {
     throw UnimplementedError('Not Implemented.');
   }
 
-  Future<bool> setWindowMinSize(int width, int height) {
+  Future<bool> setWindowLimit(int minWidth, int minHeight, int maxWidth, int maxHeight) {
     throw UnimplementedError('Not Implemented.');
   }
 
-  Future<void> resetWindowMinSize() {
-    throw UnimplementedError('Not Implemented.');
-  }
-
-  Future<Size?> getWindowMaxSize() {
-    throw UnimplementedError('Not Implemented.');
-  }
-
-  Future<bool> setWindowMaxSize(int width, int height) {
-    throw UnimplementedError('Not Implemented.');
-  }
-
-  Future<void> resetWindowMaxSize() {
+  Future<void> resetWindowLimit() {
     throw UnimplementedError('Not Implemented.');
   }
 

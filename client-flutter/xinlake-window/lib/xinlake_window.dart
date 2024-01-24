@@ -44,40 +44,29 @@ class XinlakeWindow {
     return XinlakeWindowPlatform.instance.toggleFullScreen();
   }
 
-  /// Get window minimal size
-  @Deprecated("Not working on Windows 11")
-  Future<Size?> getWindowMinSize() async {
-    return XinlakeWindowPlatform.instance.getWindowMinSize();
+  /// Get window minimal and maximal size
+  Future<(int, int, int, int)?> getWindowLimit() async {
+    return XinlakeWindowPlatform.instance.getWindowLimit();
   }
 
-  /// Set window minimal size, effective immediately
-  @Deprecated("Not working on Windows 11")
-  Future<bool> setWindowMinSize(int width, int height) async {
-    return XinlakeWindowPlatform.instance.setWindowMinSize(width, height);
+  /// Set window minimal and maximal size, effective immediately
+  Future<bool> setWindowLimit(
+    int minWidth,
+    int minHeight,
+    int maxWidth,
+    int maxHeight,
+  ) async {
+    return XinlakeWindowPlatform.instance.setWindowLimit(
+      minWidth,
+      minHeight,
+      maxWidth,
+      maxHeight,
+    );
   }
 
-  /// Unset (don't limit) window minimal size
-  @Deprecated("Not working on Windows 11")
-  Future<void> resetWindowMinSize() async {
-    return XinlakeWindowPlatform.instance.resetWindowMinSize();
-  }
-
-  /// Get window maximal size
-  @Deprecated("Not working on Windows 11")
-  Future<Size?> getWindowMaxSize() async {
-    return XinlakeWindowPlatform.instance.getWindowMaxSize();
-  }
-
-  /// Set window maximal size, effective immediately
-  @Deprecated("Not working on Windows 11")
-  Future<bool> setWindowMaxSize(int width, int height) async {
-    return XinlakeWindowPlatform.instance.setWindowMaxSize(width, height);
-  }
-
-  /// Unset (don't limit) window maximal size
-  @Deprecated("Not working on Windows 11")
-  Future<void> resetWindowMaxSize() async {
-    return XinlakeWindowPlatform.instance.resetWindowMinSize();
+  /// Unset (don't limit) window minimal and maximal size
+  Future<void> resetWindowLimit() async {
+    return XinlakeWindowPlatform.instance.resetWindowLimit();
   }
 
   /// Sets the window topmost mode, if set to True the window will appear sticky
