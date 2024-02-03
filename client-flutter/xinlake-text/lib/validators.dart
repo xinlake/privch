@@ -270,7 +270,7 @@ bool isFQDN(String str, {bool requireTld = true, bool allowUnderscores = false})
     }
   }
 
-  for (var part in parts) {
+  for (final part in parts) {
     if (allowUnderscores) {
       if (part.contains('__')) {
         return false;
