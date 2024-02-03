@@ -12,7 +12,7 @@ Future<void> connect(Shadowsocks shadowsocks) {
     shadowsocks.port,
     shadowsocks.address,
     shadowsocks.password,
-    shadowsocks.encrypt,
+    shadowsocks.encryption,
   );
 }
 

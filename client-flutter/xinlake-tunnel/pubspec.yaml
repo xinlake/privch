@@ -1,14 +1,14 @@
 # cspell: disable
 
 name: xinlake_tunnel
-version: 0.3.1
+version: 0.3.2
 publish_to: 'none'
 
-description: A new flutter plugin project.
+description: Native encrypted communication plugin.
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:
