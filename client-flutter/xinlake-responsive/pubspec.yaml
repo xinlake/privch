@@ -1,16 +1,16 @@
 # cSpell:disable
 
 name: xinlake_responsive
-version: 0.3.0
+version: 0.3.1
 publish_to: 'none'
 
-description: Components for responsive design.
+description: A collection of widgets.
 repository: https://github.com/xinlake/privch/client-flutter/tree/main/xinlake-responsive
 issue_tracker: https://github.com/xinlake/privch/issues
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
