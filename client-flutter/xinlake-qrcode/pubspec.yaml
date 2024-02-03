@@ -1,16 +1,16 @@
 # cSpell: disable
 
 name: xinlake_qrcode
-version: 0.6.0
+version: 0.6.1
 publish_to: 'none'
 
-description: Xinlake QRCode plugin.
+description: Read QRCodes from image files, camera, and screenshots.
 repository: https://github.com/xinlake/privch/tree/main/client-flutter/xinlake-qrcode
 issue_tracker: https://github.com/xinlake/privch/issues
 homepage: https://xinlake.dev
 
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:
