@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:privch/pages/about_page.dart';
+import 'package:privch/pages/dashboard_view.dart';
+import 'package:privch/pages/server_list.dart';
+import 'package:privch/pages/setting_view.dart';
+import 'package:privch/providers/home_provider.dart';
+import 'package:privch/widgets/app_title.dart';
 import 'package:provider/provider.dart';
-
-import '../pages/about_page.dart';
-import '../providers/home_provider.dart';
-import '../providers/server_provider.dart';
-import 'dashboard_view.dart';
-import 'server_list.dart';
-import 'setting_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,10 +20,11 @@ class HomePage extends StatefulWidget {
 
 class _State extends State<HomePage> {
   late AppLocalizations _appLocales;
+  late ThemeData _themeData;
 
   SystemUiOverlayStyle _getSystemOverlayStyle() {
-    final brightness = Theme.of(context).brightness;
-    final colorSurface = Theme.of(context).colorScheme.surface;
+    final brightness = _themeData.brightness;
+    final colorSurface = _themeData.colorScheme.surface;
 
     return switch (brightness) {
       Brightness.light => SystemUiOverlayStyle(
@@ -47,7 +47,7 @@ class _State extends State<HomePage> {
   }
 
   Widget _buildLead() {
-    final appBarColor = Theme.of(context).colorScheme.inversePrimary;
+    final appBarColor = _themeData.colorScheme.inversePrimary;
 
     return Scaffold(
       appBar: _appBar(appBarColor),
@@ -62,18 +62,16 @@ class _State extends State<HomePage> {
       automaticallyImplyLeading: false,
       backgroundColor: appBarColor,
       centerTitle: true,
-      title: switch (context.select<HomeProvider, HomeTab>((homeProvider) {
-        return homeProvider.homeContent;
-      })) {
-        HomeTab.dashboard => const SizedBox(),
-        HomeTab.servers => Text(
-            "${_appLocales.servers} (${context.read<ServerProvider>().serverList.length})",
-          ),
+      title: switch (context.select<HomeTabProvider, HomeTab>(
+        (homeTabProvider) => homeTabProvider.homeTab,
+      )) {
+        HomeTab.dashboard => buildAppTitle(context),
+        HomeTab.servers => Text(_appLocales.servers),
         HomeTab.settings => Text(_appLocales.settings),
       },
-      actions: switch (context.select<HomeProvider, HomeTab>((homeProvider) {
-        return homeProvider.homeContent;
-      })) {
+      actions: switch (context.select<HomeTabProvider, HomeTab>(
+        (homeProvider) => homeProvider.homeTab,
+      )) {
         HomeTab.dashboard => null,
         HomeTab.servers => null,
         HomeTab.settings => [
@@ -107,11 +105,11 @@ class _State extends State<HomePage> {
   }
 
   Widget _content(Color appBarColor) {
-    return Consumer<HomeProvider>(
+    return Consumer<HomeTabProvider>(
       builder: (context, homeProvider, child) {
-        return switch (homeProvider.homeContent) {
+        return switch (homeProvider.homeTab) {
           HomeTab.dashboard => DashboardView(appBarColor: appBarColor),
-          HomeTab.servers => ShadowsocksList(appBarColor: appBarColor),
+          HomeTab.servers => ShadowsocksList(actionBarColor: appBarColor),
           HomeTab.settings => const SettingView(),
         };
       },
@@ -120,19 +118,19 @@ class _State extends State<HomePage> {
 
   Widget _bottomNavigationBar() {
     const iconSize = 32.0;
-    final bgColor = Theme.of(context).colorScheme.surface;
-    final activeColor = Theme.of(context).colorScheme.primary;
-    final buttonText = Theme.of(context).textTheme.labelSmall;
+    final bgColor = _themeData.colorScheme.surface;
+    final activeColor = _themeData.colorScheme.primary;
+    final buttonText = _themeData.textTheme.labelSmall;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Divider(
-          color: Theme.of(context).splashColor,
+          color: _themeData.splashColor,
           height: 1,
           thickness: 1,
         ),
-        Consumer<HomeProvider>(
+        Consumer<HomeTabProvider>(
           builder: (context, homeProvider, child) {
             return Container(
               color: bgColor,
@@ -140,19 +138,19 @@ class _State extends State<HomePage> {
                 children: [
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeTab.dashboard
-                          ? () => homeProvider.setHomeContent(HomeTab.dashboard)
+                      onPressed: homeProvider.homeTab != HomeTab.dashboard
+                          ? () => homeProvider.homeTab = HomeTab.dashboard
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            homeProvider.homeContent == HomeTab.dashboard ? activeColor : null,
+                            homeProvider.homeTab == HomeTab.dashboard ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          homeProvider.homeContent == HomeTab.dashboard
+                          homeProvider.homeTab == HomeTab.dashboard
                               ? const Icon(Icons.dashboard)
                               : const Icon(Icons.dashboard_outlined),
                           Text(
@@ -165,19 +163,19 @@ class _State extends State<HomePage> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeTab.servers
-                          ? () => homeProvider.setHomeContent(HomeTab.servers)
+                      onPressed: homeProvider.homeTab != HomeTab.servers
+                          ? () => homeProvider.homeTab = HomeTab.servers
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            (homeProvider.homeContent == HomeTab.servers) ? activeColor : null,
+                            (homeProvider.homeTab == HomeTab.servers) ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          (homeProvider.homeContent == HomeTab.servers)
+                          (homeProvider.homeTab == HomeTab.servers)
                               ? const Icon(Icons.view_list)
                               : const Icon(Icons.view_list_outlined),
                           Text(
@@ -190,19 +188,19 @@ class _State extends State<HomePage> {
                   ),
                   Expanded(
                     child: IconButton(
-                      onPressed: homeProvider.homeContent != HomeTab.settings
-                          ? () => homeProvider.setHomeContent(HomeTab.settings)
+                      onPressed: homeProvider.homeTab != HomeTab.settings
+                          ? () => homeProvider.homeTab = HomeTab.settings
                           : () {},
                       style: IconButton.styleFrom(
                         foregroundColor:
-                            homeProvider.homeContent == HomeTab.settings ? activeColor : null,
+                            homeProvider.homeTab == HomeTab.settings ? activeColor : null,
                       ),
                       iconSize: iconSize,
                       icon: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          homeProvider.homeContent == HomeTab.settings
+                          homeProvider.homeTab == HomeTab.settings
                               ? const Icon(Icons.settings)
                               : const Icon(Icons.settings_outlined),
                           Text(
@@ -224,8 +222,10 @@ class _State extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO lead2
     _appLocales = AppLocalizations.of(context);
+    _themeData = Theme.of(context);
+
+    // TODO lead2
     final mq = MediaQuery.of(context);
 
     return _buildLead();

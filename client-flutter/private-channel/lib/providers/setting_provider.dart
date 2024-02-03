@@ -201,7 +201,9 @@ class SettingProvider with ChangeNotifier {
 
       // app theme mode
       final themeModeIndex = _preferences.getInt(_keyAppThemeModeIndex);
-      if (themeModeIndex != null) {
+      if (themeModeIndex != null &&
+          themeModeIndex >= 0 &&
+          themeModeIndex < ThemeMode.values.length) {
         _appThemeMode = ThemeMode.values[themeModeIndex];
       }
 
@@ -244,6 +246,8 @@ class SettingProvider with ChangeNotifier {
         dnsRemoteAddress: _tunnelDnsRemoteAddress,
       );
 
+      // TODO: x internal
+      notifyListeners();
       _initialized = true;
     }
   }

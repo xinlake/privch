@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.11.0+110
+version: 0.12.0+120
 
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -33,7 +33,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter  
 
-  intl: ^0.18.0
+  # intl is pinned to version 0.18.1 by flutter_localizations from the flutter SDK
+  intl: ^0.18.1
+  envied: ^0.5.3
+  hashlib: ^1.12.0
+  ed25519_edwards: ^0.3.1
   path_provider: ^2.1.2
   hive: ^2.2.3
   shared_preferences: ^2.2.2
@@ -46,6 +50,9 @@ dependencies:
   fl_chart: ^0.66.0
   flutter_markdown: ^0.6.18
 
+  xready_animations:
+    path: ../xready-animations
+
   xinlake_responsive:
     path: ../xinlake-responsive
   xinlake_text:
@@ -57,13 +64,13 @@ dependencies:
   xinlake_tunnel:
     path: ../xinlake-tunnel
 
-  xready_animations:
-    path: ../xready-animations
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  envied_generator: ^0.5.3
+  build_runner: ^2.4.8
+  
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

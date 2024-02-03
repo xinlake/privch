@@ -15,6 +15,9 @@
     "notConnected": "未连接",
 
     "servers": "服务器",
+    "privchServers": "专用服务器",
+    "publicServers": "公共服务器",
+    "updateFromCloud": "更新服务器列表",
     "noServer": "没有服务器",
     "addServer": "添加服务器",
     "createServer": "手动创建",

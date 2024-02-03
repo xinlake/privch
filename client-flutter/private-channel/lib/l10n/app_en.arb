@@ -15,6 +15,9 @@
     "notConnected": "NOT CONNECTED",
 
     "servers": "Servers",
+    "privchServers": "PrivCh Servers",
+    "publicServers": "Public Servers",
+    "updateFromCloud": "Update Server List",
     "noServer": "No server",
     "addServer": "Add server",
     "createServer": "Create server",

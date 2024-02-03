@@ -4,7 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 
 // item name also used as the key of @connectBy in the arb file
-enum ConnectionMode { auto, manual }
+enum ConnectionMode {
+  auto,
+  manual,
+}
 
 class DashboardProvider with ChangeNotifier {
   final _keyShowChart = "Dashboard-ShowChart";
@@ -109,7 +112,9 @@ class DashboardProvider with ChangeNotifier {
       }
 
       final connectModeIndex = _preferences.getInt(_keyConnectionModeIndex);
-      if (connectModeIndex != null) {
+      if (connectModeIndex != null &&
+          connectModeIndex >= 0 &&
+          connectModeIndex < ConnectionMode.values.length) {
         _connectionMode = ConnectionMode.values[connectModeIndex];
       }
 

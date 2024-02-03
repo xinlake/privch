@@ -16,7 +16,7 @@
 |---------|---------|
 | [private-channel](./private-channel/) | 跨平台客户端应用程序 |
 | [xinlake-text](./xinlake-text/) | Flutter 软件库，文本处理工具 |
-| [xinlake-responsive](./xinlake-responsive/) | Flutter 软件库，一些控件 |
+| [xinlake-responsive](./xinlake-responsive/) | Flutter 软件库，一个控件集合 |
 | [xready-animations](./xready-animations/) | Flutter 软件库，一个动画集合 |
 | [xinlake-qrcode](./xinlake-qrcode/) | Flutter 软件库，从图像文件、摄像头（Android）、截屏（Windows）读取二维码信息 |
 | [xinlake-platform](./xinlake-platform/) | Flutter 软件库，支持 Flutter 应用与操作系统的交互 |
@@ -24,7 +24,7 @@
 | [xinlake-tunnel](./xinlake-tunnel/) | Flutter 软件库，底层加密通讯隧道，支持 Shadowsocks 协议，Android 系统上使用 VPN 接口，Windows 系统上使用 Proxy 接口 |
 
 ## 编译
-你也可以直接下载已经编译好的二进制文件：
+你也可以直接下载已经编译好的二进制文件，_v0.11 之后的客户端包含新的计费功能，需评估费用后才能提供下载_
 - Android：[xinlake.privch-v0.11.0-release.apk](https://github.com/xinlake/privch/raw/dev/client-flutter/.lfs/binary/xinlake.privch-v0.11.0-release.apk)
 
 ### Android 客户端应用

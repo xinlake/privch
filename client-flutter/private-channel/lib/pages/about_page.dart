@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:privch/app/privch.dart';
+import 'package:privch/config.dart' as config;
+import 'package:privch/widgets/app_title.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xinlake_platform/xinlake_platform.dart' as xp;
-
-import '../config.dart' as config;
 
 Future<void> showAbout({
   required BuildContext context,
@@ -14,10 +15,7 @@ Future<void> showAbout({
       const iconAsset = "_assets/Icons/app-192.png";
 
       final appLocales = AppLocalizations.of(context);
-      final primaryColor = Theme.of(context).colorScheme.primary;
-
       final iconSize = MediaQuery.of(context).size.shortestSide * 0.13;
-      final titleText = Theme.of(context).textTheme.titleLarge!;
 
       return AlertDialog(
         content: Column(
@@ -45,24 +43,7 @@ Future<void> showAbout({
                           top: config.spacing,
                           bottom: config.spacing * 0.5,
                         ),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Private",
-                                style: titleText.copyWith(
-                                  color: primaryColor,
-                                ),
-                              ),
-                              TextSpan(
-                                text: " Channel",
-                                style: titleText,
-                              ),
-                            ],
-                          ),
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                        ),
+                        child: buildAppTitle(context),
                       ),
                       FutureBuilder<xp.VersionInfo?>(
                         future: xp.getAppVersion(),
@@ -114,7 +95,7 @@ Future<void> showAbout({
             TextButton(
               onPressed: () async {
                 await launchUrl(
-                  Uri.parse(config.appPrivacyPolicy),
+                  Uri.parse(PrivCh.appPrivacyPolicy),
                   mode: LaunchMode.platformDefault,
                   webOnlyWindowName: "_blank",
                 );

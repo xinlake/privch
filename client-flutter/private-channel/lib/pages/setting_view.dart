@@ -1,16 +1,11 @@
-/*
-  2023-08-P.T.S
- */
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:privch/config.dart' as config;
+import 'package:privch/providers/dashboard_provider.dart';
+import 'package:privch/providers/setting_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:xinlake_responsive/xinlake_heading.dart';
 import 'package:xinlake_text/validators.dart' as xv;
-
-import '../config.dart' as config;
-import '../providers/dashboard_provider.dart';
-import '../providers/setting_provider.dart';
 
 class SettingView extends StatefulWidget {
   const SettingView({super.key});
@@ -27,6 +22,7 @@ class _State extends State<SettingView> {
   final _tunnelDnsRemoteAddressEditing = TextEditingController();
 
   late AppLocalizations _appLocales;
+  late ThemeData _themeData;
 
   Widget _buildLead() {
     final headingPadding = EdgeInsets.only(top: config.spacing * 2);
@@ -92,7 +88,7 @@ class _State extends State<SettingView> {
   }
 
   Widget _buildAppearance() {
-    final selectionColor = Theme.of(context).colorScheme.primary;
+    final selectionColor = _themeData.colorScheme.primary;
     final vertical = MediaQuery.of(context).size.width < 600;
 
     if (vertical) {
@@ -178,7 +174,7 @@ class _State extends State<SettingView> {
   }
 
   Widget _buildTunnel() {
-    final borderColor = Theme.of(context).splashColor;
+    final borderColor = _themeData.splashColor;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -213,7 +209,7 @@ class _State extends State<SettingView> {
   }
 
   Widget _appLanguage(Color selectionColor) {
-    final borderColor = Theme.of(context).colorScheme.primaryContainer;
+    final borderColor = _themeData.colorScheme.primaryContainer;
 
     final selectedText = TextStyle(
       color: selectionColor,
@@ -585,7 +581,7 @@ class _State extends State<SettingView> {
     String? Function(String?)? validator,
     void Function(String)? onChanged,
   }) {
-    final labelColor = Theme.of(context).hintColor;
+    final labelColor = _themeData.hintColor;
 
     return TextFormField(
       magnifierConfiguration: TextMagnifierConfiguration.disabled,
@@ -649,6 +645,8 @@ class _State extends State<SettingView> {
   @override
   Widget build(BuildContext context) {
     _appLocales = AppLocalizations.of(context);
+    _themeData = Theme.of(context);
+
     return _buildLead();
   }
 

@@ -4,16 +4,15 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:privch/api/geo_location.dart';
+import 'package:privch/config.dart' as config;
+import 'package:privch/providers/dashboard_provider.dart';
+import 'package:privch/providers/home_provider.dart';
+import 'package:privch/providers/server_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:xinlake_text/readable.dart' as xtr;
 import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
 import 'package:xready_animations/xready_animations.dart';
-
-import '../api/geo_location.dart';
-import '../config.dart' as config;
-import '../providers/dashboard_provider.dart';
-import '../providers/home_provider.dart';
-import '../providers/server_provider.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({
@@ -34,11 +33,14 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
 
   late Timer _timer;
   late AppLocalizations _appLocales;
+  late ThemeData _themeData;
 
   Future<void> _connect() async {
     final dashboardProvider = context.read<DashboardProvider>();
-    final serverProvider = context.read<ServerProvider>();
-    final homeProvider = context.read<HomeProvider>();
+    final serverTabProvider = context.read<ServerTabProvider>();
+    final privServerProvider = context.read<PrivChServerProvider>();
+    final pubServerProvider = context.read<PublicServerProvider>();
+    final homeTabProvider = context.read<HomeTabProvider>();
 
     if (dashboardProvider.tunnelState != xt.TunnelState.stopped) {
       return;
@@ -46,13 +48,13 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
 
     // manually
     if (dashboardProvider.connectionMode == ConnectionMode.manual) {
-      if (serverProvider.selected == null) {
-        await homeProvider.setHomeContent(HomeTab.servers);
+      if (serverTabProvider.selected == null) {
+        homeTabProvider.homeTab = HomeTab.servers;
         return;
       }
 
       dashboardProvider.tunnelState = xt.TunnelState.connecting;
-      final ss = serverProvider.selected!;
+      final ss = serverTabProvider.selected!;
 
       await xt.connect(ss);
 
@@ -63,7 +65,10 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
       if (ipLocation != null) {
         if (ipLocation.isNotEmpty) {
           ss.geoLocation = ipLocation;
-          await serverProvider.put(ss);
+          await switch (serverTabProvider.selectedGroup) {
+            ServerGroup.privch => privServerProvider.put(ss),
+            ServerGroup.public => pubServerProvider.put(ss),
+          };
         }
 
         dashboardProvider.tunnelState = xt.TunnelState.connected;
@@ -74,36 +79,45 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
     }
     // automatic
     else {
-      if (serverProvider.serverList.isEmpty) {
-        await homeProvider.setHomeContent(HomeTab.servers);
+      if (privServerProvider.serverList.isEmpty && pubServerProvider.serverList.isEmpty) {
+        homeTabProvider.homeTab = HomeTab.servers;
         return;
       }
 
       dashboardProvider.tunnelState = xt.TunnelState.connecting;
 
-      for (final ss in serverProvider.serverList) {
-        await xt.connect(ss);
+      for (final list in [
+        (ServerGroup.privch, privServerProvider.serverList),
+        (ServerGroup.public, pubServerProvider.serverList),
+      ]) {
+        for (final ss in list.$2) {
+          await xt.connect(ss);
+          await Future.delayed(const Duration(milliseconds: 500));
 
-        // slight redundancy *1
-        var ipLocation = await GeoLocationService.freeIpAip(ss.address).getGeoLocation() ??
-            await GeoLocationService.ipApi(ss.address).getGeoLocation() ??
-            await GeoLocationService.ipInfo(ss.address).getGeoLocation();
-        if (ipLocation != null) {
-          if (ipLocation.isNotEmpty) {
-            ss.geoLocation = ipLocation;
-            await serverProvider.put(ss);
+          // slight redundancy *1
+          var ipLocation = await GeoLocationService.freeIpAip(ss.address).getGeoLocation() ??
+              await GeoLocationService.ipApi(ss.address).getGeoLocation() ??
+              await GeoLocationService.ipInfo(ss.address).getGeoLocation();
+          if (ipLocation != null) {
+            if (ipLocation.isNotEmpty) {
+              ss.geoLocation = ipLocation;
+              await switch (list.$1) {
+                ServerGroup.privch => privServerProvider.put(ss),
+                ServerGroup.public => pubServerProvider.put(ss),
+              };
+            }
+
+            await serverTabProvider.setSelected(list.$1, ss);
+            dashboardProvider.tunnelState = xt.TunnelState.connected;
+            return;
+          } else {
+            await xt.stopTunnel();
+            dashboardProvider.tunnelState = xt.TunnelState.stopped;
           }
-
-          serverProvider.setSelected(ss);
-          dashboardProvider.tunnelState = xt.TunnelState.connected;
-          return;
-        } else {
-          await xt.stopTunnel();
-          dashboardProvider.tunnelState = xt.TunnelState.stopped;
         }
-      }
 
-      dashboardProvider.tunnelState = xt.TunnelState.stopped;
+        dashboardProvider.tunnelState = xt.TunnelState.stopped;
+      }
     }
   }
 
@@ -133,7 +147,7 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
               color: labelColor,
             ),
             Expanded(
-              child: Consumer<ServerProvider>(
+              child: Consumer<ServerTabProvider>(
                 builder: (context, serverProvider, child) {
                   // not connected
                   if (serverProvider.selected == null) {
@@ -173,8 +187,8 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
     const minMaxY = 100000.0;
     const gridColor = Color.fromARGB(33, 128, 128, 128);
     const labelColor = Color.fromARGB(255, 128, 128, 128);
-    final lineColor = Theme.of(context).colorScheme.primary;
-    final areaColor = Theme.of(context).colorScheme.inversePrimary;
+    final lineColor = _themeData.colorScheme.primary;
+    final areaColor = _themeData.colorScheme.inversePrimary;
 
     return Card(
       margin: margin,
@@ -341,7 +355,7 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
     final mqSize = MediaQuery.of(context).size;
     final buttonSize = mqSize.shortestSide * 0.39;
 
-    final borderColor = Theme.of(context).splashColor;
+    final borderColor = _themeData.splashColor;
 
     return Padding(
       padding: padding != null
@@ -455,13 +469,15 @@ class _State extends State<DashboardView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     _appLocales = AppLocalizations.of(context);
+    _themeData = Theme.of(context);
+
     final mqSize = MediaQuery.of(context).size;
-    var isLight = Theme.of(context).brightness == Brightness.light;
+    var isLight = _themeData.brightness == Brightness.light;
 
     final colors = [
-      Theme.of(context).colorScheme.surface,
-      Theme.of(context).colorScheme.onPrimary,
-      Theme.of(context).colorScheme.primaryContainer,
+      _themeData.colorScheme.surface,
+      _themeData.colorScheme.onPrimary,
+      _themeData.colorScheme.primaryContainer,
       widget.appBarColor,
     ];
 

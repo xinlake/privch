@@ -45,3 +45,5 @@ app.*.map.json
 
 # Xinlake
 /binary
+.privch
+**/privch.g.dart

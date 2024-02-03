@@ -4,10 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-const appMail = "xinlake@outlook.com";
-const appPrivacyPolicy = "https://xinlake.dev/app/privch/privacy-policy/";
-
 class AppRoute {
+  static const initialize = "/initialize";
   static const home = "/home";
   static const shadowsocks = "/home/shadowsocks";
 }
@@ -49,3 +47,6 @@ const lead2Width = 1050.0;
 const leadWidth = 770.0;
 
 final spacing = isMobile ? 8.0 : 10.0;
+double getSpacing(BuildContext context) {
+  return MediaQuery.of(context).size.shortestSide * 0.03;
+}

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:privch/config.dart' as config;
+import 'package:privch/providers/shadowsocks_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:xinlake_text/validators.dart' as xv;
 import 'package:xinlake_tunnel/xinlake_tunnel.dart' as xt;
-
-import '../config.dart' as config;
-import '../providers/shadowsocks_provider.dart';
 
 class ShadowsocksView extends StatefulWidget {
   const ShadowsocksView({super.key});
@@ -19,6 +18,7 @@ class ShadowsocksView extends StatefulWidget {
 
 class _State extends State<ShadowsocksView> {
   late AppLocalizations _appLocales;
+  late ThemeData _themeData;
 
   final _nameEditing = TextEditingController();
   final _addressEditing = TextEditingController();
@@ -40,7 +40,7 @@ class _State extends State<ShadowsocksView> {
   }
 
   Widget _buildShadowsocks() {
-    final borderColor = Theme.of(context).splashColor;
+    final borderColor = _themeData.splashColor;
 
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.baseline,
@@ -108,8 +108,8 @@ class _State extends State<ShadowsocksView> {
 
   Widget _ssQrcode() {
     final size = MediaQuery.of(context).size.shortestSide * 0.7;
-    final colorBg = Theme.of(context).colorScheme.surface;
-    final colorFg = Theme.of(context).colorScheme.inverseSurface;
+    final colorBg = _themeData.colorScheme.surface;
+    final colorFg = _themeData.colorScheme.inverseSurface;
 
     return Container(
       color: colorBg,
@@ -374,7 +374,7 @@ class _State extends State<ShadowsocksView> {
             await showDialog(
               context: context,
               builder: (context) {
-                final selectionColor = Theme.of(context).colorScheme.primary;
+                final selectionColor = _themeData.colorScheme.primary;
 
                 return Dialog(
                   child: Column(
@@ -383,7 +383,7 @@ class _State extends State<ShadowsocksView> {
                       // title
                       Text(
                         "Encryption",
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: _themeData.textTheme.titleLarge,
                       ),
 
                       Padding(
@@ -393,7 +393,7 @@ class _State extends State<ShadowsocksView> {
                           runSpacing: config.spacing,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: xt.Shadowsocks.encryptMethods.map((encryption) {
-                            bool selected = encryption == shadowsocksProvider.encrypt;
+                            bool selected = encryption == shadowsocksProvider.encryption;
                             return selected
                                 ? Container(
                                     decoration: BoxDecoration(
@@ -436,7 +436,7 @@ class _State extends State<ShadowsocksView> {
             );
           },
           child: Text(
-            shadowsocksProvider.encrypt.toUpperCase(),
+            shadowsocksProvider.encryption.toUpperCase(),
           ),
         );
       },
@@ -453,7 +453,7 @@ class _State extends State<ShadowsocksView> {
     String? Function(String?)? validator,
     void Function(String)? onChanged,
   }) {
-    final labelColor = Theme.of(context).hintColor;
+    final labelColor = _themeData.hintColor;
 
     return TextFormField(
       magnifierConfiguration: TextMagnifierConfiguration.disabled,
@@ -506,6 +506,7 @@ class _State extends State<ShadowsocksView> {
   @override
   Widget build(BuildContext context) {
     _appLocales = AppLocalizations.of(context);
+    _themeData = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(),

@@ -145,9 +145,9 @@ class ShadowsocksProvider extends xt.Shadowsocks with ChangeNotifier {
   }
 
   // encrypt
-  void setEncrypt(String encrypt) {
-    if (this.encrypt != encrypt) {
-      this.encrypt = encrypt;
+  void setEncrypt(String encryption) {
+    if (this.encryption != encryption) {
+      this.encryption = encryption;
 
       notifyListeners();
     }
