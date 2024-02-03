@@ -1,5 +1,3 @@
-import 'package:flutter/services.dart';
-
 import 'window_placement.dart';
 import 'xinlake_window_platform_interface.dart';
 
