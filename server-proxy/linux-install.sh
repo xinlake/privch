@@ -9,8 +9,8 @@ PRIVCH_SERVICE_CTRL="privch.sh"
 PRIVCH_ID_FILENAME="privch.id"
 PRIVCH_ED25519_FILENAME="privch.pem"
 
-SS_PACKAGE_URL="https://github.com/xinlake/privch/raw/dev/server-proxy/.lfs/linux-ss.rust-v1.16.2-gnu-x64.tar.xz"
-SS_PACKAGE_SHA256="2d2c27a8827a7a7ddaec1f6b3aee35fdca73c8e6a05b66c43239b4ea001365ab"
+SS_PACKAGE_URL="https://github.com/xinlake/privch/raw/dev/server-proxy/.lfs/linux-ss.rust-v1.17.2c-gnu-x64.tar.xz"
+SS_PACKAGE_SHA256="74b28913cdcff6fcf97902ea22890973cd6b68b6eb5fc8e79b02ac033d2d29f5"
 
 PATTERN_IP4='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
 PATTERN_URL='^(http|https)://[^ "]+$'
@@ -140,8 +140,11 @@ install_ss_rust() {
     fi
 
     tar -xf "$PRIVCH_INSTALL_DIR/$download_file_name" --directory "$PRIVCH_INSTALL_DIR"
-    rm "$PRIVCH_INSTALL_DIR/$download_file_name"
-    
+
+    chmod +x "$PRIVCH_INSTALL_DIR/sslocal"
+    chmod +x "$PRIVCH_INSTALL_DIR/ssserver"
+
+    rm "$PRIVCH_INSTALL_DIR/$download_file_name"    
     return 0
 }
 
