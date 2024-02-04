@@ -1,7 +1,7 @@
 # cspell:disable
 
 name: xinlake_platform
-version: 0.7.1
+version: 0.7.2
 publish_to: 'none'
 
 description: A collection of native utilities for Flutter applications.
