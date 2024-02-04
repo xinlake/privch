@@ -135,6 +135,14 @@ impl TcpListener {
     pub async fn bind_with_opts(addr: &SocketAddr, accept_opts: AcceptOpts) -> io::Result<TcpListener> {
         let socket = create_inbound_tcp_socket(addr, &accept_opts).await?;
 
+        if let Some(size) = accept_opts.tcp.send_buffer_size {
+            socket.set_send_buffer_size(size)?;
+        }
+
+        if let Some(size) = accept_opts.tcp.recv_buffer_size {
+            socket.set_recv_buffer_size(size)?;
+        }
+
         // On platforms with Berkeley-derived sockets, this allows to quickly
         // rebind a socket, without needing to wait for the OS to clean up the
         // previous one.
@@ -166,11 +174,17 @@ impl TcpListener {
     }
 
     /// Create a `TcpListener` from tokio's `TcpListener`
-    pub fn from_listener(listener: TokioTcpListener, accept_opts: AcceptOpts) -> TcpListener {
-        TcpListener {
+    pub fn from_listener(listener: TokioTcpListener, accept_opts: AcceptOpts) -> io::Result<TcpListener> {
+        // Enable TFO if supported
+        // macos requires TCP_FASTOPEN to be set after listen(), but other platform doesn't have this constraint
+        if accept_opts.tcp.fastopen {
+            set_tcp_fastopen(&listener)?;
+        }
+
+        Ok(TcpListener {
             inner: listener,
             accept_opts,
-        }
+        })
     }
 
     /// Polls to accept a new incoming connection to this listener.

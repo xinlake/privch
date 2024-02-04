@@ -34,7 +34,7 @@ Related Projects:
 
 ### Optional Features
 
-- `trust-dns` - Uses [`trust-dns-resolver`](https://crates.io/crates/trust-dns-resolver) as DNS resolver instead of `tokio`'s builtin.
+- `hickory-dns` - Uses [`hickory-resolver`](https://crates.io/crates/hickory-resolver) as DNS resolver instead of `tokio`'s builtin.
 
 - `local-http` - Allow using HTTP protocol for `sslocal`
 
@@ -407,6 +407,7 @@ Redirects connections with `iptables` configurations to the port that `sslocal` 
 
 - Linux, Android
 - macOS, iOS
+- Windows
 
 #### Linux
 
@@ -431,12 +432,20 @@ sslocal --protocol tun -s "[::1]:8388" -m "aes-256-gcm" -k "hello-kitty" --outbo
 
 It will create a Tun interface with address `10.255.0.1` and netmask `255.255.255.0`.
 
+#### Windows
+
+Download `wintun.dll` from [Wintun](https://www.wintun.net/), and place it in the folder with shadowsocks' runnable binaries, or in the system PATH.
+
+```powershell
+sslocal --protocol tun -s "[::1]:8388" -m "aes-256-gcm" -k "hello-kitty" --outbound-bind-interface "Ethernet 0" --tun-interface-name "shadowsocks"
+```
+
 ### Local client for Windows Service
 
 Compile it by enabling `--features "winservice"` (not included in the default build):
 
 ```bash
-cargo build --release "sswinservice" --features "winservice"
+cargo build --release --bin "sswinservice" --features "winservice"
 ```
 
 Install it as a Windows Service (PowerShell):
@@ -545,6 +554,9 @@ Example configuration:
             "socks5_auth_config_path": "/path/to/auth.json",
             // OPTIONAL. Instance specific ACL
             "acl": "/path/to/acl/file.acl",
+            // OPTIONAL. macOS launchd activate socket
+            "launchd_tcp_socket_name": "TCPListener",
+            "launchd_udp_socket_name": "UDPListener"
         },
         {
             // SOCKS5, SOCKS4/4a local server
@@ -558,7 +570,10 @@ Example configuration:
             // - TCP is enabled, then SOCKS5's UDP Association command will return this address
             // - UDP is enabled, then SOCKS5's UDP server will listen to this address.
             "local_udp_address": "127.0.0.1",
-            "local_udp_port": 2081
+            "local_udp_port": 2081,
+            // OPTIONAL. macOS launchd activate socket
+            "launchd_tcp_socket_name": "TCPListener",
+            "launchd_udp_socket_name": "UDPListener"
         },
         {
             // Tunnel local server (feature = "local-tunnel")
@@ -571,14 +586,19 @@ Example configuration:
             "forward_address": "8.8.8.8",
             "forward_port": 53,
             // OPTIONAL. Customizing whether to start TCP and UDP tunnel
-            "mode": "tcp_only"
+            "mode": "tcp_only",
+            // OPTIONAL. macOS launchd activate socket
+            "launchd_tcp_socket_name": "TCPListener",
+            "launchd_udp_socket_name": "UDPListener"
         },
         {
             // HTTP local server (feature = "local-http")
             "protocol": "http",
             // Listen address
             "local_address": "127.0.0.1",
-            "local_port": 3128
+            "local_port": 3128,
+            // OPTIONAL. macOS launchd activate socket
+            "launchd_tcp_socket_name": "TCPListener"
         },
         {
             // DNS local server (feature = "local-dns")
@@ -596,7 +616,12 @@ Example configuration:
             // Remote DNS address, DNS queries will be sent through ssserver to this address
             "remote_dns_address": "8.8.8.8",
             // OPTIONAL. Remote DNS's port, 53 by default
-            "remote_dns_port": 53
+            "remote_dns_port": 53,
+            // OPTIONAL. dns client cache size for fetching dns queries.
+            "client_cache_size": 5,
+            // OPTIONAL. macOS launchd activate socket
+            "launchd_tcp_socket_name": "TCPListener",
+            "launchd_udp_socket_name": "UDPListener"
         },
         {
             // Tun local server (feature = "local-tun")
@@ -728,9 +753,9 @@ Example configuration:
     // - quad9 (TCP, UDP)
     // - quad9_tls (TLS), enable by feature "dns-over-tls"
     //
-    // The field is only effective if feature "trust-dns" is enabled.
+    // The field is only effective if feature "hickory-dns" is enabled.
     "dns": "google",
-    // Configure `cache_size` for "trust-dns" ResolverOpts. Set to "0" to disable DNS cache.
+    // Configure `cache_size` for "hickory-dns" ResolverOpts. Set to "0" to disable DNS cache.
     "dns_cache_size": 0,
 
     // Mode, could be one of the
@@ -954,7 +979,7 @@ It supports the following features:
 - [x] Improved logging format (waiting for the new official log crate)
 - [x] Support more ciphers without depending on `libcrypto` (waiting for an acceptable Rust crypto lib implementation)
 - [x] Windows support.
-- [x] Build with stable `rustc` <del>(blocking by `crypto2`)</del>.
+- [x] Build with stable `rustc` ~~(blocking by `crypto2`)~~.
 - [x] Support HTTP Proxy protocol
 - [x] AEAD ciphers. (proposed in [SIP004](https://github.com/shadowsocks/shadowsocks-org/issues/30), still under discussion)
 - [x] Choose server based on delay #152

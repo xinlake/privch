@@ -37,7 +37,7 @@ apply plugin: 'kotlin-android'
 android {
     namespace "xinlake.tunnel"
 
-    buildToolsVersion "33.0.2"
+    buildToolsVersion="33.0.3"
     ndkVersion '26.1.10909125'
     compileSdk 33
 

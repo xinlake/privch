@@ -6,7 +6,6 @@ use std::{
     task::{self, Poll},
 };
 
-use hyper::client::connect::{Connected, Connection};
 use pin_project::pin_project;
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 
@@ -61,45 +60,33 @@ impl ProxyHttpStream {
 
     #[cfg(feature = "local-http-rustls")]
     pub async fn connect_https(stream: AutoProxyClientStream, domain: &str) -> io::Result<ProxyHttpStream> {
-        use byte_string::ByteStr;
         use log::warn;
         use once_cell::sync::Lazy;
         use std::sync::Arc;
         use tokio_rustls::{
-            rustls::{Certificate, ClientConfig, OwnedTrustAnchor, RootCertStore, ServerName},
+            rustls::{pki_types::ServerName, ClientConfig, RootCertStore},
             TlsConnector,
         };
 
         static TLS_CONFIG: Lazy<Arc<ClientConfig>> = Lazy::new(|| {
             let mut config = ClientConfig::builder()
-                .with_safe_defaults()
                 .with_root_certificates(match rustls_native_certs::load_native_certs() {
                     Ok(certs) => {
                         let mut store = RootCertStore::empty();
 
                         for cert in certs {
-                            let rcert = Certificate(cert.0);
-                            if let Err(err) = store.add(&rcert) {
-                                warn!("failed to add cert, error: {}, cert: {:?}", err, ByteStr::new(&rcert.0));
+                            if let Err(err) = store.add(cert) {
+                                warn!("failed to add cert (native), error: {}", err);
                             }
                         }
 
                         store
                     }
                     Err(err) => {
-                        warn!("failed to load native certs, {}", err);
-
-                        let mut roots = Vec::with_capacity(webpki_roots::TLS_SERVER_ROOTS.len());
-                        for root in webpki_roots::TLS_SERVER_ROOTS {
-                            roots.push(OwnedTrustAnchor::from_subject_spki_name_constraints(
-                                root.subject,
-                                root.spki,
-                                root.name_constraints,
-                            ));
-                        }
+                        warn!("failed to load native certs, {}, going to load from webpki-roots", err);
 
                         let mut store = RootCertStore::empty();
-                        store.add_trust_anchors(roots.into_iter());
+                        store.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
 
                         store
                     }
@@ -123,7 +110,7 @@ impl ProxyHttpStream {
             }
         };
 
-        let tls_stream = connector.connect(host, stream).await?;
+        let tls_stream = connector.connect(host.to_owned(), stream).await?;
 
         let (_, session) = tls_stream.get_ref();
         let negotiated_http2 = matches!(session.alpn_protocol(), Some(b"h2"));
@@ -176,16 +163,5 @@ impl AsyncWrite for ProxyHttpStream {
 
     fn poll_shutdown(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> Poll<io::Result<()>> {
         forward_call!(self, poll_shutdown, cx)
-    }
-}
-
-impl Connection for ProxyHttpStream {
-    fn connected(&self) -> Connected {
-        let conn = Connected::new();
-        if self.negotiated_http2() {
-            conn.negotiated_h2()
-        } else {
-            conn
-        }
     }
 }

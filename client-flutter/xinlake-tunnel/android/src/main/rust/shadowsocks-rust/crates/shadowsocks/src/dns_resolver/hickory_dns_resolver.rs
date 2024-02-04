@@ -11,20 +11,24 @@ use std::{
 
 use cfg_if::cfg_if;
 use futures::ready;
-use log::trace;
-use tokio::{io::ReadBuf, net::UdpSocket};
-use trust_dns_resolver::{
+use hickory_resolver::{
     config::{LookupIpStrategy, ResolverConfig, ResolverOpts},
     error::ResolveResult,
     name_server::{GenericConnector, RuntimeProvider},
-    proto::{iocompat::AsyncIoTokioAsStd, udp::DnsUdpSocket, TokioTime},
+    proto::{
+        iocompat::AsyncIoTokioAsStd,
+        udp::{DnsUdpSocket, QuicLocalAddr},
+        TokioTime,
+    },
     AsyncResolver,
     TokioHandle,
 };
+use log::trace;
+use tokio::{io::ReadBuf, net::UdpSocket};
 
 use crate::net::{tcp::TcpStream as ShadowTcpStream, udp::UdpSocket as ShadowUdpSocket, ConnectOpts};
 
-/// Shadowsocks trust-dns Runtime Provider
+/// Shadowsocks hickory-dns Runtime Provider
 #[derive(Clone)]
 pub struct ShadowDnsRuntimeProvider {
     handle: TokioHandle,
@@ -56,6 +60,12 @@ impl DnsUdpSocket for ShadowUdpSocket {
     fn poll_send_to(&self, cx: &mut Context<'_>, buf: &[u8], target: SocketAddr) -> Poll<io::Result<usize>> {
         let udp: &UdpSocket = self.deref();
         udp.poll_send_to(cx, buf, target)
+    }
+}
+
+impl QuicLocalAddr for ShadowUdpSocket {
+    fn local_addr(&self) -> io::Result<SocketAddr> {
+        self.deref().local_addr()
     }
 }
 
@@ -95,10 +105,10 @@ pub type ShadowDnsConnectionProvider = GenericConnector<ShadowDnsRuntimeProvider
 
 /// Shadowsocks DNS resolver
 ///
-/// A customized trust-dns-resolver
+/// A customized hickory-dns-resolver
 pub type DnsResolver = AsyncResolver<ShadowDnsConnectionProvider>;
 
-/// Create a `trust-dns` asynchronous DNS resolver
+/// Create a `hickory-dns` asynchronous DNS resolver
 pub async fn create_resolver(
     dns: Option<ResolverConfig>,
     opts: Option<ResolverOpts>,
@@ -129,7 +139,7 @@ pub async fn create_resolver(
         None => {
             cfg_if! {
                 if #[cfg(any(all(unix, not(target_os = "android")), windows))] {
-                    use trust_dns_resolver::system_conf::read_system_conf;
+                    use hickory_resolver::system_conf::read_system_conf;
 
                     // use the system resolver configuration
                     let (config, mut opts) = match read_system_conf() {
@@ -158,9 +168,9 @@ pub async fn create_resolver(
 
                     Ok(DnsResolver::new(config, opts, ShadowDnsConnectionProvider::new(ShadowDnsRuntimeProvider::new(connect_opts))))
                 } else {
-                    use trust_dns_resolver::error::ResolveError;
+                    use hickory_resolver::error::ResolveError;
 
-                    Err(ResolveError::from("current platform doesn't support trust-dns resolver with system configured".to_owned()))
+                    Err(ResolveError::from("current platform doesn't support hickory-dns resolver with system configured".to_owned()))
                 }
             }
         }

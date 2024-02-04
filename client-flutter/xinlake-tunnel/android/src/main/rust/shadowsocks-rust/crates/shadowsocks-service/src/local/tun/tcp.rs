@@ -13,7 +13,7 @@ use std::{
     time::Duration,
 };
 
-use log::{error, trace};
+use log::{debug, error, trace};
 use shadowsocks::{net::TcpSocketOpts, relay::socks5::Address};
 use smoltcp::{
     iface::{Config as InterfaceConfig, Interface, SocketHandle, SocketSet},
@@ -26,7 +26,7 @@ use smoltcp::{
 use spin::Mutex as SpinMutex;
 use tokio::{
     io::{AsyncRead, AsyncWrite, ReadBuf},
-    sync::mpsc,
+    sync::{mpsc, oneshot},
 };
 
 use crate::{
@@ -88,6 +88,7 @@ type SharedTcpConnectionControl = Arc<SpinMutex<TcpSocketControl>>;
 struct TcpSocketCreation {
     control: SharedTcpConnectionControl,
     socket: TcpSocket<'static>,
+    socket_created_tx: oneshot::Sender<()>,
 }
 
 struct TcpConnection {
@@ -112,7 +113,7 @@ impl Drop for TcpConnection {
 }
 
 impl TcpConnection {
-    fn new(
+    async fn new(
         socket: TcpSocket<'static>,
         socket_creation_tx: &mpsc::UnboundedSender<TcpSocketCreation>,
         manager_notify: Arc<ManagerNotify>,
@@ -129,12 +130,14 @@ impl TcpConnection {
             recv_state: TcpSocketState::Normal,
             send_state: TcpSocketState::Normal,
         }));
-
+        let (tx, rx) = oneshot::channel();
         let _ = socket_creation_tx.send(TcpSocketCreation {
             control: control.clone(),
             socket,
+            socket_created_tx: tx,
         });
-
+        // waiting socket add to SocketSet
+        let _ = rx.await;
         TcpConnection {
             control,
             manager_notify,
@@ -304,8 +307,14 @@ impl TcpTun {
                 let mut socket_set = SocketSet::new(vec![]);
 
                 while manager_running.load(Ordering::Relaxed) {
-                    while let Ok(TcpSocketCreation { control, socket }) = socket_creation_rx.try_recv() {
+                    while let Ok(TcpSocketCreation {
+                        control,
+                        socket,
+                        socket_created_tx: socket_create_tx,
+                    }) = socket_creation_rx.try_recv()
+                    {
                         let handle = socket_set.add(socket);
+                        let _ = socket_create_tx.send(());
                         sockets.insert(handle, control);
                     }
 
@@ -388,7 +397,11 @@ impl TcpTun {
                             && !socket.may_recv()
                             && !matches!(
                                 socket.state(),
-                                TcpState::SynReceived | TcpState::Established | TcpState::FinWait1 | TcpState::FinWait2
+                                TcpState::Listen
+                                    | TcpState::SynReceived
+                                    | TcpState::Established
+                                    | TcpState::FinWait1
+                                    | TcpState::FinWait2
                             )
                         {
                             trace!("closed TCP Read Half, {:?}", socket.state());
@@ -501,14 +514,15 @@ impl TcpTun {
                 return Err(io::Error::new(ErrorKind::Other, format!("listen error: {:?}", err)));
             }
 
-            trace!("created TCP connection for {} <-> {}", src_addr, dst_addr);
+            debug!("created TCP connection for {} <-> {}", src_addr, dst_addr);
 
             let connection = TcpConnection::new(
                 socket,
                 &self.manager_socket_creation_tx,
                 self.manager_notify.clone(),
                 &accept_opts.tcp,
-            );
+            )
+            .await;
 
             // establish a tunnel
             let context = self.context.clone();
@@ -524,7 +538,7 @@ impl TcpTun {
     }
 
     pub async fn drive_interface_state(&mut self, frame: &[u8]) {
-        if let Err(..) = self.iface_tx.send(frame.to_vec()) {
+        if self.iface_tx.send(frame.to_vec()).is_err() {
             panic!("interface send channel closed unexpectly");
         }
 

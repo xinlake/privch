@@ -1,3 +1,41 @@
+shadowsocks-rust (1.17.2) unstable; urgency=medium
+
+  ## Features
+
+  - `local`: `socks` local server will support SOCKS5, SOCKS4a, HTTP proxy protocols when `local-http`, `local-socks4` features are enabled
+  - `local`: Support setting `udp_mtu` in configuration file to actively reject `packet.size > MTU`
+
+  ## Bug Fixes
+
+  - #1378 dns-over-tls/https with rustls add dependencies to certs
+  - #1381 Set the incoming socket buffer sizes properly on the listen socket
+  - #1414 TUN synchronize SYN packet and Socket creation
+
+shadowsocks-rust (1.17.1) unstable; urgency=medium
+
+  ## Features
+
+  - #1330 `local`: Support macOS launch activate socket (https://developer.apple.com/documentation/xpc/1505523-launch_activate_socket)
+  - #1357 `local`: Upgrade hyper (https://crates.io/crates/hyper) to v1.0
+
+  ## Bug Fixes
+
+  - #1328 `run_as_user` aborts if any error occurs
+
+  ## Miscellaneous
+
+  - Minor improvements for `local-tun` on Windows
+  - Upgrade `shadowsocks-crypto` that supports `sm4-gcm`, `sm4-ccm` non-standard AEAD ciphers
+
+shadowsocks-rust (1.17.0) unstable; urgency=medium
+
+  ## Features
+
+  - Trust-DNS is rebranded to Hickory-DNS https://github.com/hickory-dns/hickory-dns/releases/tag/v0.24.0
+  - Experimental: Support DNS-over-H3 (Try with configuration `"dns": "google_h3"` and compile with feature `"dns-over-h3"`)
+  - #1319 Allow configuring `local-dns` client cache size
+  - Experimental: `local-tun` supports Windows with [Wintun](https://www.wintun.net/)
+
 shadowsocks-rust (1.16.2) unstable; urgency=medium
 
   ## Features
