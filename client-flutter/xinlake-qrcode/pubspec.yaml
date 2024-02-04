@@ -1,7 +1,7 @@
 # cSpell: disable
 
 name: xinlake_qrcode
-version: 0.6.1
+version: 0.6.2
 publish_to: 'none'
 
 description: Read QRCodes from image files, camera, and screenshots.
