@@ -864,14 +864,14 @@ packages:
       path: "../xinlake-platform"
       relative: true
     source: path
-    version: "0.7.1"
+    version: "0.7.2"
   xinlake_qrcode:
     dependency: "direct main"
     description:
       path: "../xinlake-qrcode"
       relative: true
     source: path
-    version: "0.6.1"
+    version: "0.6.2"
   xinlake_responsive:
     dependency: "direct main"
     description:
@@ -892,7 +892,7 @@ packages:
       path: "../xinlake-tunnel"
       relative: true
     source: path
-    version: "0.3.2"
+    version: "0.4.0"
   xready_animations:
     dependency: "direct main"
     description:

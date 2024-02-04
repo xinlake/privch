@@ -30,7 +30,7 @@ if (isXinlake) {
 android {
     namespace "xinlake.privch"
 
-    buildToolsVersion "33.0.2"
+    buildToolsVersion="33.0.3"
     compileSdk flutter.compileSdkVersion
     ndkVersion '26.1.10909125' // flutter.ndkVersion
 

@@ -29,13 +29,23 @@ class _State extends State<ShadowsocksList> {
       padding: padding ?? EdgeInsets.symmetric(horizontal: _spacing),
       decoration: BoxDecoration(
         color: widget.actionBarColor,
-        border: Border(
-          bottom: BorderSide(
-            color: _themeData.dividerColor,
-          ),
+        border: Border.all(
+          color: widget.actionBarColor,
+          width: 0,
         ),
       ),
-      child: _serverTabs(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _serverTabs(),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: _themeData.dividerColor.withAlpha(100),
+          ),
+        ],
+      ),
     );
   }
 
@@ -75,8 +85,8 @@ class _State extends State<ShadowsocksList> {
                 _spacing * 0.6,
               ),
               child: Text(switch (serverTab) {
-                ServerGroup.privch => _appLocales.privchServers,
-                ServerGroup.public => _appLocales.publicServers,
+                ServerGroup.privch => _appLocales.privchServerTab,
+                ServerGroup.public => _appLocales.publicServerTab,
               }),
             ),
           ),

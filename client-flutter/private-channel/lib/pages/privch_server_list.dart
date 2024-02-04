@@ -101,7 +101,7 @@ class _State extends State<PrivChShadowsocksList> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: _spacing),
-                            child: const Text("Listing servers ..."),
+                            child: Text(_appLocales.updating),
                           ),
                         ],
                       )
@@ -439,7 +439,7 @@ class _State extends State<PrivChShadowsocksList> {
           )
               ? null
               : () async => await _listServer(),
-          child: Text(_appLocales.updateFromCloud),
+          child: Text(_appLocales.updateServerList),
         ),
 
         // foot padding
