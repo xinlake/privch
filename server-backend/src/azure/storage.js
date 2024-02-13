@@ -1,6 +1,3 @@
-// MIT license
-// Copyright (c) Xinlake Liu (https://xinlake.dev)
-
 const { ContainerClient, BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storage-blob");
 const stream = require("./stream");
 
