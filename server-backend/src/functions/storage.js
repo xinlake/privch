@@ -1,10 +1,13 @@
 const { app } = require('@azure/functions');
 const azStorage = require( "../azure/storage");
+const azClient = require('../azure/client');
 const blake = require('../blake/blake2b');
 const ed25519 = require('../ed25519/ed25519');
 
-const privchVersion = "2024.1";
-const privateIpRegex = /^(10(\.[0-9]{1,3}){3}|172\.(1[6-9]|2[0-9]|3[0-1])(\.[0-9]{1,3}){2}|192\.168(\.[0-9]{1,3}){2})$/;
+const privchVersion = "2024.2";
+
+const ip4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+const ip4PrivatePattern = /^(10(\.[0-9]{1,3}){3}|172\.(1[6-9]|2[0-9]|3[0-1])(\.[0-9]{1,3}){2}|192\.168(\.[0-9]{1,3}){2})$/;
 
 // storage account name and shared key
 if (!process.env.PRIVCH_STORAGE_ACCOUNT || 
@@ -43,18 +46,7 @@ app.http('storage', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
-        let clientIp = request.headers.get("x-forwarded-for")?.split(":")[0];
-        if (!clientIp || privateIpRegex.test(clientIp)) {
-            clientIp = request.headers.get("client-ip")?.split(":")[0];
-            if (!clientIp || privateIpRegex.test(clientIp)) {
-                return {
-                    status: 200,
-                    headers: {'content-type': 'text/plain;charset=UTF-8'},
-                    body: 'Access Denied'
-                };
-            }
-        }
-
+        const clientIp = azClient.getClientIp(request.headers);
         const jsonBody = await request.json();
 
         // validate HTTP request without providing details to the client
