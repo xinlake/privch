@@ -2,7 +2,7 @@
 **该项目仍在开发之中，不建议直接使用其中的源码。**
 
 ## Linux 服务器安装
-安装脚本会检查计算机的兼容性（如果不兼容则不会安装），更新系统并安装所需的软件，然后下载已编译的加密代理程序并创建系统服务。
+安装脚本会检查计算机的兼容性（如果不兼容则不会安装），更新系统并安装所需的软件，然后下载已编译的加密代理程序并创建系统服务。*提醒：如果您选用的云服务器支持访问控制（例如 Azure 或 AWS），则需要为云服务器开放代理服务端口，以便客户端能够正常连接代理服务。*
 
 支持的 Linux 发行版：
 - Debian 12 及更新的版本
@@ -22,10 +22,15 @@ curl --silent --fail --show-error https://raw.githubusercontent.com/xinlake/priv
 适用于需要集中管理的场景，且后端已经准备好。安装完成后，客户端可通过后端自动同步代理节点信息，无需手动操作。
 该方案中，代理节点与后端的通信需要使用密钥进行签名和身份验证，脚本将生成签名私钥并显示公钥，公钥需要在后端上进行配置。
 ```sh
-curl --silent --fail --show-error https://raw.githubusercontent.com/xinlake/privch/dev/server-proxy/linux-install.sh \
-| sudo --preserve-env bash -s -- --storage-endpoint <STORAGE-API-URL> [--update-key]
+curl --silent --fail --show-error \
+https://raw.githubusercontent.com/xinlake/privch/dev/server-proxy/linux-install.sh \
+| sudo --preserve-env bash -s -- \
+--storage-endpoint <STORAGE-API-URL> --client-ip-endpoint <CLIENT-IP-API-URL> \
+[--update-key]
 ```
 - `--storage-endpoint <STORAGE-API-URL>`：参数用于指定后端存储端点 API 地址，如 *`--storage-endpoint https://function-name.azurewebsites.net/api/storage`*。
+
+- `--client-ip-endpoint <CLIENT-IP-API-URL>`：参数用于指定后端客户端 IP 信息端点 API 地址，如 *`--client-ip-endpoint https://function-name.azurewebsites.net/api/client-ip`*。
 
 - `--update-key`：参数表示是否更新密钥。如果不指定该参数，则会优先使用已有的密钥。如果指定该参数，则会忽略已有的密钥，重新生成新密钥。
 

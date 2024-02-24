@@ -1,6 +1,5 @@
 #!/bin/bash
 # Install privch service on Debian and Ubuntu
-# updated: 2024-01
 # https://xinlake.dev
 
 PRIVCH_INSTALL_DIR="/usr/local/xinlake-privch"
@@ -34,7 +33,7 @@ gen_ed25519_key() {
     local key_path=$1
     local overwrite=$2
 
-    if [[ ! -f "$key_path" || $overwrite ]]; then
+    if [[ ! -f "$key_path" || $overwrite == true ]]; then
         openssl genpkey -algorithm ED25519 -outform PEM -out "$key_path"
     fi
 
@@ -155,6 +154,7 @@ fi
 
 # parameters
 privch_endpoint_storage=""
+privch_endpoint_client_ip=""
 privch_update_key=false
 
 while [[ $# -gt 0 ]]; do
@@ -169,8 +169,18 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
+        --client-ip-endpoint)
+            shift
+            if [[ $1 =~ $PATTERN_URL ]]; then
+                privch_endpoint_client_ip="$1"
+                shift
+            else
+                echo_warning "Invalid value of --client-ip-endpoint" >&2
+                exit 1
+            fi
+            ;;
         --update-key)
-            update_key=true
+            privch_update_key=true
             shift
             ;;
         *)
@@ -189,7 +199,13 @@ mkdir -m 0755 -p "$PRIVCH_INSTALL_DIR"
 
 # genkey
 if [[ "$privch_endpoint_storage" ]]; then
-    if ! $(gen_ed25519_key "$PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME" $update_key); then
+    if [[ "$privch_endpoint_client_ip" == "" ]]; then
+        echo_warning "The --client-ip-endpoint parameter is required \
+            when the --storage-endpoint parameter is configured."
+        exit 1
+    fi
+
+    if ! $(gen_ed25519_key "$PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME" $privch_update_key); then
         exit 1
     fi
 fi
@@ -257,7 +273,7 @@ start_service() {
     # register with the backend
     if [[ "$privch_endpoint_storage" && -f "$PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME" ]]; then
         local put_status
-        local public_ip=\$(curl --silent "https://api.ipify.org")
+        local public_ip=\$(curl --silent "$privch_endpoint_client_ip")
         
         if [[ \$public_ip =~ $PATTERN_IP4 ]]; then
             echo -n "\$public_ip" | b2sum --length 512 | tr -d "[:blank:]-\n" \\
@@ -327,9 +343,10 @@ uninstall_service() {
 display_pubkey() {
     if [[ -f "$PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME" ]]; then
         local key_text=\$(openssl pkey -in "$PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME" -text)
-        local key_pub=\$(grep -A 7 "pub:" <<< "\$key_text" | grep -v "pub:" \
+        local key_pub=\$(grep -A 7 "pub:" <<< "\$key_text" | grep -v "pub:" \\
             | tr -d '[:space:]:' | xxd -r -p | base64 --wrap 0)
 
+        echo "Public Key:"
         echo_purple "\$key_pub"
     else
         echo "Unable to read $PRIVCH_INSTALL_DIR/$PRIVCH_ED25519_FILENAME"
@@ -337,13 +354,13 @@ display_pubkey() {
 }
 
 display_qrcode() {
-    local pub_ip="\$(curl --silent "https://api.ipify.org")"
+    local public_ip=\$(curl --silent "$privch_endpoint_client_ip")
     
     local ss_params
     local ss_url
     for ss in "\${ss_list[@]}"; do
         read -ra ss_params <<< "\$ss"
-        ss_url="ss://\$(echo "\${ss_params[1]}:\${ss_params[2]}@\$pub_ip:\${ss_params[0]}" \\
+        ss_url="ss://\$(echo "\${ss_params[1]}:\${ss_params[2]}@\$public_ip:\${ss_params[0]}" \\
             | base64 --wrap 0 | sed "s/=*\$//")"
 
         echo -e "\n"
